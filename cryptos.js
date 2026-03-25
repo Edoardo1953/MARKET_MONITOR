@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let monitorItems = JSON.parse(localStorage.getItem('cryptos_monitor')) || [];
     const cryptoData = [
         // MAJOR
-        { name: 'Bitcoin', symbol: 'BTC/USD', price: 65240.50, change: 2.45, category: 'Major' },
-        { name: 'Ethereum', symbol: 'ETH/USD', price: 3480.12, change: 1.85, category: 'Major' },
+        { name: 'Bitcoin', symbol: 'BTC/USD', price: 70770.50, change: 1.12, category: 'Major' },
+        { name: 'Ethereum', symbol: 'ETH/USD', price: 2159.12, change: -0.02, category: 'Major' },
         { name: 'Solana', symbol: 'SOL/USD', price: 178.45, change: 5.12, category: 'Major' },
         { name: 'Binance Coin', symbol: 'BNB/USD', price: 592.30, change: 0.84, category: 'Major' },
 
@@ -175,15 +175,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveMonitor() {
         localStorage.setItem('cryptos_monitor', JSON.stringify(monitorItems));
     }
-
     function simulatePrices() {
         monitorItems.forEach(item => {
-            const movement = (Math.random() - 0.5) * 0.015; // 1.5% max change (cryptos are volatile)
+            const movement = (Math.random() - 0.5) * 0.015;
             item.price *= (1 + movement);
             item.change += movement * 100;
         });
         renderMonitor();
-        
         const rows = document.querySelectorAll('.commodity-row');
         rows.forEach(r => {
             r.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
@@ -224,12 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     e.stopPropagation();
                     window.location.href = `crypto_detail.html?symbol=${encodeURIComponent(item.symbol)}`;
                 });
-
                 el.querySelector('.add-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
                     addCrypto(item);
                 });
-
                 searchResults.appendChild(el);
             });
             searchResults.classList.remove('hidden');
@@ -239,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Listeners
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.trim();
         renderSearchResults(query, activeCategory);
@@ -265,12 +260,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    refreshBtn.addEventListener('click', () => {
+    async function updatePricesFromAPI() {
+        const apiKey = TwelveDataAPI.getApiKey();
+        if (!apiKey || monitorItems.length === 0) return false;
+
+        try {
+            const symbolsStr = monitorItems.map(item => item.symbol).join(',');
+            const response = await fetch(`https://api.twelvedata.com/quote?symbol=${symbolsStr}&apikey=${apiKey}`);
+            const data = await response.json();
+            if (data.status === "error") throw new Error(data.message);
+            const results = monitorItems.length === 1 ? { [monitorItems[0].symbol]: data } : data;
+            monitorItems.forEach(item => {
+                const real = results[item.symbol];
+                if (real && real.close) {
+                    item.price = parseFloat(real.close);
+                    item.change = parseFloat(real.percent_change || 0);
+                }
+            });
+            saveMonitor();
+            renderMonitor();
+            return true;
+        } catch (error) {
+            console.error("Twelve Data Crypto Fetch Error:", error);
+            return false;
+        }
+    }
+
+    refreshBtn.addEventListener('click', async () => {
         const icon = refreshBtn.querySelector('i');
         icon.classList.add('fa-spin');
-        simulatePrices();
+        const success = await updatePricesFromAPI();
+        if (!success) simulatePrices();
         setTimeout(() => icon.classList.remove('fa-spin'), 1000);
     });
 
     renderMonitor();
+    updatePricesFromAPI();
 });

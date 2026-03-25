@@ -1,52 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions
     const exchangeCatalog = {
-        'nyse': { name: 'NYSE', fullName: 'New York Stock Exchange', country: 'Stati Uniti', flag: 'fi fi-us', index: 'S&P 500', price: 5241.50, change: 1.24, basePrice: 5000 },
-        'nasdaq': { name: 'NASDAQ', fullName: 'NASDAQ Stock Market', country: 'Stati Uniti', flag: 'fi fi-us', index: 'Nasdaq 100', price: 18125.40, change: 2.10, basePrice: 16000 },
-        'borit': { name: 'Borsa Italiana', fullName: 'Borsa Italiana S.p.A.', country: 'Italia', flag: 'fi fi-it', index: 'FTSE MIB', price: 34320.15, change: -0.32, basePrice: 32000 },
-        'lse': { name: 'London SE', fullName: 'London Stock Exchange', country: 'Regno Unito', flag: 'fi fi-gb', index: 'FTSE 100', price: 7935.60, change: 0.15, basePrice: 7500 },
-        'dax': { name: 'Deutsche Börse', fullName: 'Frankfurt Stock Exchange', country: 'Germania', flag: 'fi fi-de', index: 'DAX 40', price: 18450.80, change: 0.84, basePrice: 17000 },
-        'cac': { name: 'Euronext Paris', fullName: 'Euronext Paris (CAC)', country: 'Francia', flag: 'fi fi-fr', index: 'CAC 40', price: 8205.12, change: 0.45, basePrice: 7800 },
-        'tse': { name: 'Tokyo SE', fullName: 'Tokyo Stock Exchange', country: 'Giappone', flag: 'fi fi-jp', index: 'Nikkei 225', price: 40850.30, change: 1.12, basePrice: 35000 },
-        'hkex': { name: 'HKEX', fullName: 'Hong Kong Exchanges', country: 'Hong Kong', flag: 'fi fi-hk', index: 'Hang Seng', price: 16820.15, change: -1.45, basePrice: 18000 },
-        'bovespa': { name: 'B3 Bovespa', fullName: 'Brasil Bolsa Balcão', country: 'Brasile', flag: 'fi fi-br', index: 'Ibovespa', price: 128450.20, change: 0.85, basePrice: 120000 },
-        'tsx': { name: 'Toronto SE', fullName: 'Toronto Stock Exchange', country: 'Canada', flag: 'fi fi-ca', index: 'S&P/TSX', price: 21850.40, change: 0.12, basePrice: 20000 },
-        'asx': { name: 'ASX', fullName: 'Australian Securities Exchange', country: 'Australia', flag: 'fi fi-au', index: 'S&P/ASX 200', price: 7850.12, change: 0.35, basePrice: 7000 },
-        'sse': { name: 'Shanghai SE', fullName: 'Shanghai Stock Exchange', country: 'Cina', flag: 'fi fi-cn', index: 'SSE Composite', price: 3045.60, change: -0.15, basePrice: 2800 },
-        'six': { name: 'SIX Swiss', fullName: 'SIX Swiss Exchange', country: 'Svizzera', flag: 'fi fi-ch', index: 'SMI', price: 11450.80, change: 0.45, basePrice: 10000 },
-        'ibex': { name: 'Bolsa Madrid', fullName: 'Bolsa de Madrid (IBEX)', country: 'Spagna', flag: 'fi fi-es', index: 'IBEX 35', price: 10840.20, change: 0.15, basePrice: 9000 },
-        'eurnex': { name: 'Euronext AMS', fullName: 'Euronext Amsterdam', country: 'Paesi Bassi', flag: 'fi fi-nl', index: 'AEX', price: 890.45, change: 0.25, basePrice: 800 }
+        'nyse': { name: 'NYSE', fullName: 'New York Stock Exchange', country: 'Stati Uniti', flag: 'fi fi-us', index: 'S&P 500', price: 6556.37, change: 0.85, basePrice: 6200, currency: '$' },
+        'nasdaq': { name: 'NASDAQ', fullName: 'NASDAQ Stock Market', country: 'Stati Uniti', flag: 'fi fi-us', index: 'Nasdaq 100', price: 24267.57, change: 1.15, basePrice: 22000, currency: '$' },
+        'borit': { name: 'Borsa Italiana', fullName: 'Borsa Italiana S.p.A.', country: 'Italia', flag: 'fi fi-it', index: 'FTSE MIB', price: 43369.53, change: 0.42, basePrice: 40000, currency: '€' },
+        'lse': { name: 'London SE', fullName: 'London Stock Exchange', country: 'Regno Unito', flag: 'fi fi-gb', index: 'FTSE 100', price: 10086.74, change: 0.25, basePrice: 9500, currency: '£' },
+        'dax': { name: 'Deutsche Börse', fullName: 'Frankfurt Stock Exchange', country: 'Germania', flag: 'fi fi-de', index: 'DAX 40', price: 23028.79, change: 0.65, basePrice: 21000, currency: '€' },
+        'cac': { name: 'Euronext Paris', fullName: 'Euronext Paris (CAC)', country: 'Francia', flag: 'fi fi-fr', index: 'CAC 40', price: 7849.02, change: -0.15, basePrice: 8000, currency: '€' },
+        'tse': { name: 'Tokyo SE', fullName: 'Tokyo Stock Exchange', country: 'Giappone', flag: 'fi fi-jp', index: 'Nikkei 225', price: 53749.62, change: 1.45, basePrice: 45000, currency: '¥' },
+        'hkex': { name: 'HKEX', fullName: 'Hong Kong Exchanges', country: 'Hong Kong', flag: 'fi fi-hk', index: 'Hang Seng', price: 25335.95, change: 0.75, basePrice: 22000, currency: 'HK$' },
+        'bovespa': { name: 'B3 Bovespa', fullName: 'Brasil Bolsa Balcão', country: 'Brasile', flag: 'fi fi-br', index: 'Ibovespa', price: 184493.48, change: 0.35, basePrice: 160000, currency: 'R$' },
+        'tsx': { name: 'Toronto SE', fullName: 'Toronto Stock Exchange', country: 'Canada', flag: 'fi fi-ca', index: 'S&P/TSX', price: 25850.40, change: 0.22, basePrice: 23000, currency: 'C$' },
+        'asx': { name: 'ASX', fullName: 'Australian Securities Exchange', country: 'Australia', flag: 'fi fi-au', index: 'S&P/ASX 200', price: 8450.12, change: 0.55, basePrice: 7800, currency: 'A$' },
+        'sse': { name: 'Shanghai SE', fullName: 'Shanghai Stock Exchange', country: 'Cina', flag: 'fi fi-cn', index: 'SSE Composite', price: 3450.60, change: -0.45, basePrice: 3200, currency: '¥' },
+        'six': { name: 'SIX Swiss', fullName: 'SIX Swiss Exchange', country: 'Svizzera', flag: 'fi fi-ch', index: 'SMI', price: 12450.80, change: 0.35, basePrice: 11000, currency: 'CHF' },
+        'ibex': { name: 'Bolsa Madrid', fullName: 'Bolsa de Madrid (IBEX)', country: 'Spagna', flag: 'fi fi-es', index: 'IBEX 35', price: 11840.20, change: 0.12, basePrice: 10500, currency: '€' },
+        'eurnex': { name: 'Euronext AMS', fullName: 'Euronext Amsterdam', country: 'Paesi Bassi', flag: 'fi fi-nl', index: 'AEX', price: 945.45, change: 0.85, basePrice: 850, currency: '€' }
     };
 
     const stockConstituents = {
         'nyse': [
-            { symbol: 'AAPL', name: 'Apple Inc.', price: 172.62, change: 0.45 },
-            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 924.30, change: 3.12 },
-            { symbol: 'TSLA', name: 'Tesla, Inc.', price: 175.45, change: -1.24 },
-            { symbol: 'JPM', name: 'JPMorgan Chase', price: 195.30, change: 0.75 },
-            { symbol: 'WMT', name: 'Walmart Inc.', price: 60.84, change: 0.35 }
+            { symbol: 'JPM', name: 'JPMorgan Chase', price: 245.30, change: 0.75 },
+            { symbol: 'WMT', name: 'Walmart Inc.', price: 82.84, change: 0.35 },
+            { symbol: 'BRK.B', name: 'Berkshire Hathaway', price: 479.33, change: 0.12 },
+            { symbol: 'LLY', name: 'Eli Lilly', price: 911.72, change: 1.45 },
+            { symbol: 'V', name: 'Visa Inc.', price: 303.76, change: 0.25 },
+            { symbol: 'MA', name: 'Mastercard Inc.', price: 498.93, change: 0.85 },
+            { symbol: 'HD', name: 'Home Depot', price: 352.40, change: -0.15 }
         ],
         'nasdaq': [
-            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 152.45, change: 2.10 },
-            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 416.42, change: 0.85 },
-            { symbol: 'META', name: 'Meta Platforms', price: 502.30, change: 1.85 },
-            { symbol: 'AMD', name: 'AMD', price: 184.20, change: 4.12 },
-            { symbol: 'NFLX', name: 'Netflix, Inc.', price: 625.50, change: 0.45 }
+            { symbol: 'AAPL', name: 'Apple Inc.', price: 252.95, change: 0.45 },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 179.43, change: 3.12 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 374.68, change: 0.85 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 292.54, change: 2.10 },
+            { symbol: 'AMZN', name: 'Amazon.com', price: 207.10, change: 1.15 },
+            { symbol: 'META', name: 'Meta Platforms', price: 603.75, change: 1.85 },
+            { symbol: 'TSLA', name: 'Tesla, Inc.', price: 215.45, change: -1.24 },
+            { symbol: 'AVGO', name: 'Broadcom Inc.', price: 318.29, change: 1.10 },
+            { symbol: 'COST', name: 'Costco Wholesale', price: 973.82, change: 0.45 }
         ],
         'borit': [
-            { symbol: 'ENI', name: 'Eni S.p.A.', price: 15.24, change: 0.45 },
-            { symbol: 'RACE', name: 'Ferrari N.V.', price: 384.20, change: 1.24 },
-            { symbol: 'ISP', name: 'Intesa Sanpaolo', price: 3.12, change: -0.35 },
-            { symbol: 'STLAM', name: 'Stellantis N.V.', price: 26.45, change: 0.84 },
-            { symbol: 'LDO', name: 'Leonardo S.p.A.', price: 21.30, change: 4.52 }
+            { symbol: 'ENI', name: 'Eni S.p.A.', price: 23.26, change: 0.45 },
+            { symbol: 'RACE', name: 'Ferrari N.V.', price: 412.30, change: 1.25 },
+            { symbol: 'ISP', name: 'Intesa Sanpaolo', price: 4.12, change: 0.85 },
+            { symbol: 'STLAM', name: 'Stellantis N.V.', price: 26.45, change: -1.24 },
+            { symbol: 'LDO', name: 'Leonardo S.p.A.', price: 24.80, change: 2.15 }
         ],
         'cac': [
-            { symbol: 'MC.PA', name: 'LVMH', price: 845.20, change: 1.25 },
-            { symbol: 'TTE.PA', name: 'TotalEnergies', price: 62.45, change: 0.45 },
-            { symbol: 'SAN.PA', name: 'Sanofi', price: 89.30, change: -0.15 },
-            { symbol: 'OR.PA', name: 'L\'Oréal', price: 432.10, change: 0.85 },
-            { symbol: 'AIR.PA', name: 'Airbus', price: 154.20, change: 2.10 },
-            { symbol: 'BNP.PA', name: 'BNP Paribas', price: 64.32, change: 1.12 }
+            { symbol: 'MC.PA', name: 'LVMH', price: 466.65, change: -1.25 },
+            { symbol: 'TTE.PA', name: 'TotalEnergies', price: 76.00, change: 0.85 },
+            { symbol: 'SAN.PA', name: 'Sanofi', price: 77.77, change: -0.15 },
+            { symbol: 'OR.PA', name: 'L\'Oréal', price: 348.40, change: -0.45 },
+            { symbol: 'AIR.PA', name: 'Airbus', price: 160.92, change: 1.15 },
+            { symbol: 'RMS.PA', name: 'Hermès', price: 1649.50, change: -2.10 }
         ],
         'dax': [
             { symbol: 'SAP', name: 'SAP SE', price: 174.20, change: 1.45 },
@@ -98,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('exchangeName').textContent = ex.name;
     document.getElementById('exchangeFullName').textContent = ex.fullName;
     document.getElementById('exchangeFlag').className = ex.flag + ' exchange-flag-header';
-    document.getElementById('indexPrice').textContent = ex.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+    document.getElementById('indexPrice').textContent = ex.price.toLocaleString(undefined, {minimumFractionDigits: 2}) + ' ' + ex.currency;
     document.getElementById('exchangeIndexName').textContent = ex.index;
     
     const changeEl = document.getElementById('indexChange');
@@ -138,14 +144,35 @@ document.addEventListener('DOMContentLoaded', () => {
             case '1y':
                 tableTitle.textContent = `Andamento Mensile ${ex.index} (1 Anno)`;
                 ['Apr 25', 'Giu 25', 'Ago 25', 'Ott 25', 'Dic 25', 'Mar 26'].forEach((m, i) => {
-                    records.push(mockRecord(m, ex.price * (0.85 + (i * 0.03))));
+                    records.push(mockRecord(m, ex.price * (0.88 + (i * 0.02))));
+                });
+                records.reverse();
+                break;
+            case '6m':
+                tableTitle.textContent = `Andamento 6 Mesi ${ex.index}`;
+                ['Ott 25', 'Nov 25', 'Dic 25', 'Gen 26', 'Feb 26', 'Mar 26'].forEach((m, i) => {
+                    records.push(mockRecord(m, ex.price * (0.92 + (i * 0.015))));
+                });
+                records.reverse();
+                break;
+            case '3m':
+                tableTitle.textContent = `Analisi Trimestrale ${ex.index}`;
+                ['Gen 26', 'Feb 26', 'Mar 26'].forEach((m, i) => {
+                    records.push(mockRecord(m, ex.price * (0.95 + (i * 0.025))));
+                });
+                records.reverse();
+                break;
+            case '1m':
+                tableTitle.textContent = `Dettaglio Ultimo Mese ${ex.index}`;
+                ['Sett 1', 'Sett 2', 'Sett 3', 'Ultima'].forEach((w, i) => {
+                    records.push(mockRecord(w, ex.price * (0.98 + (i * 0.007))));
                 });
                 records.reverse();
                 break;
             default:
                 tableTitle.textContent = `Analisi Short-term ${ex.index}`;
-                ['Gen 26', 'Feb 26', 'Mar 26'].forEach((m, i) => {
-                    records.push(mockRecord(m, ex.price * (0.95 + (i * 0.02))));
+                ['Feb 26', 'Mar 26'].forEach((m, i) => {
+                    records.push(mockRecord(m, ex.price * (0.97 + (i * 0.02))));
                 });
                 records.reverse();
                 break;
@@ -205,7 +232,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return { labels, data, pointRadii };
     }
 
-    const initialData = generateChartData('5y');
+    // Default to 1M
+    const initialData = generateChartData('1m');
     const exchangeChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -230,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
-                tooltip: { callbacks: { label: (ctx) => `Quota: ${ctx.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2})}` } }
+                tooltip: { callbacks: { label: (ctx) => `Quota: ${ctx.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2})} ${ex.currency}` } }
             },
             scales: {
                 y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
@@ -278,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="mini-name">${s.name}</span>
                 </div>
                 <div class="mini-data">
-                    <div class="mini-price">$${s.price.toLocaleString(undefined, {minimumFractionDigits: 2})}</div>
+                    <div class="mini-price">${s.price.toLocaleString(undefined, {minimumFractionDigits: 2})} ${ex.currency}</div>
                     <div class="mini-change ${s.change >= 0 ? 'price-up' : 'price-down'}">${s.change >= 0 ? '+' : ''}${s.change.toFixed(2)}%</div>
                 </div>
             `;
@@ -290,6 +318,83 @@ document.addEventListener('DOMContentLoaded', () => {
         renderStocks(e.target.value);
     });
 
-    // Initial render of top constituents
+    // 7. Refresh Logic
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    async function updateConstituentsFromAPI() {
+        const apiKey = TwelveDataAPI.getApiKey();
+        if (!apiKey || constituents.length === 0) return false;
+
+        try {
+            const symbolsStr = constituents.map(s => s.symbol).join(',');
+            const response = await fetch(`https://api.twelvedata.com/quote?symbol=${symbolsStr}&apikey=${apiKey}`);
+            const data = await response.json();
+            
+            if (data.status === "error") throw new Error(data.message);
+
+            const results = constituents.length === 1 ? { [constituents[0].symbol]: data } : data;
+
+            constituents.forEach(s => {
+                const real = results[s.symbol];
+                if (real && real.close) {
+                    s.price = parseFloat(real.close);
+                    s.change = parseFloat(real.percent_change || 0);
+                }
+            });
+
+            // Media dei cambiamenti
+            const avgChange = constituents.reduce((acc, s) => acc + s.change, 0) / constituents.length;
+            ex.change = avgChange;
+            ex.price *= (1 + (avgChange / 1000));
+
+            renderStocks(stockSearchInput.value);
+            document.getElementById('indexPrice').textContent = ex.price.toLocaleString(undefined, {minimumFractionDigits: 2}) + ' ' + ex.currency;
+            
+            const changeEl = document.getElementById('indexChange');
+            changeEl.textContent = `${ex.change >= 0 ? '+' : ''}${ex.change.toFixed(2)}%`;
+            changeEl.className = `summary-change ${ex.change >= 0 ? 'positive' : 'negative'}`;
+
+            return true;
+        } catch (error) {
+            console.error("Twelve Data Exchange Fetch Error:", error);
+            return false;
+        }
+    }
+
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', async () => {
+            const icon = refreshBtn.querySelector('i');
+            icon.classList.add('fa-spin');
+            
+            const success = await updateConstituentsFromAPI();
+            
+            if (!success) {
+                setTimeout(() => {
+                    constituents.forEach(s => {
+                        const fluctuation = (Math.random() - 0.5) * (s.price * 0.005);
+                        s.price += fluctuation;
+                    });
+                    const idxFluc = (Math.random() - 0.5) * (ex.price * 0.002);
+                    ex.price += idxFluc;
+                    document.getElementById('indexPrice').textContent = ex.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+                    renderStocks(stockSearchInput.value);
+                    icon.classList.remove('fa-spin');
+                }, 800);
+            } else {
+                icon.classList.remove('fa-spin');
+            }
+
+            const activeBtn = document.querySelector('.filter-btn.active');
+            if (activeBtn) {
+                const range = activeBtn.getAttribute('data-range');
+                const newData = generateChartData(range);
+                exchangeChart.data.labels = newData.labels;
+                exchangeChart.data.datasets[0].data = newData.data;
+                exchangeChart.update();
+            }
+        });
+    }
+
     renderStocks();
+    updateConstituentsFromAPI();
 });

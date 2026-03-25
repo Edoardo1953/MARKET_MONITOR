@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const commodityCatalog = [
         // METALLI (Preziosi & Industriali)
-        { name: 'Oro (Gold)', symbol: 'XAU/USD', price: 2150.34, change: 0.45, category: 'Metalli' },
-        { name: 'Argento (Silver)', symbol: 'XAG/USD', price: 24.82, change: -0.12, category: 'Metalli' },
-        { name: 'Rame (Copper)', symbol: 'HG', price: 4.12, change: 0.84, category: 'Metalli' },
+        { name: 'Oro (Gold)', symbol: 'XAU/USD', price: 4474.20, change: 1.25, category: 'Metalli' },
+        { name: 'Argento (Silver)', symbol: 'XAG/USD', price: 73.17, change: 3.45, category: 'Metalli' },
+        { name: 'Rame (Copper)', symbol: 'HG', price: 5.51, change: 1.62, category: 'Metalli' },
         { name: 'Platino', symbol: 'PL', price: 915.20, change: -0.56, category: 'Metalli' },
         { name: 'Palladio', symbol: 'PA', price: 984.45, change: 2.15, category: 'Metalli' },
         { name: 'Alluminio', symbol: 'AL', price: 2240.50, change: 0.32, category: 'Metalli' },
@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Ferro (Iron Ore)', symbol: 'FE', price: 108.45, change: -0.75, category: 'Metalli' },
 
         // ENERGIA
-        { name: 'Petrolio WTI', symbol: 'WTI', price: 81.42, change: 1.24, category: 'Energia' },
-        { name: 'Petrolio Brent', symbol: 'BRENT', price: 86.15, change: 1.05, category: 'Energia' },
-        { name: 'Gas Naturale', symbol: 'NG', price: 1.84, change: -3.52, category: 'Energia' },
+        { name: 'Petrolio WTI', symbol: 'WTI', price: 87.68, change: -5.10, category: 'Energia' },
+        { name: 'Petrolio Brent', symbol: 'BRENT', price: 98.28, change: -5.90, category: 'Energia' },
+        { name: 'Gas Naturale', symbol: 'NG', price: 2.93, change: -0.47, category: 'Energia' },
         { name: 'Gasolio Riscald.', symbol: 'HO', price: 2.72, change: 0.95, category: 'Energia' },
         { name: 'Benzina RBOB', symbol: 'RB', price: 2.68, change: 1.50, category: 'Energia' },
         { name: 'Etanolo', symbol: 'ETH', price: 1.58, change: 0.12, category: 'Energia' },
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { labels, data, pointRadii };
     }
 
-    const initialData = generateChartData('5y');
+    const initialData = generateChartData('1m');
 
     const chartConfig = {
         type: 'line',

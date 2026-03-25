@@ -42,7 +42,10 @@
                     <p id="stockExchange">---</p>
                 </div>
             </div>
-            <div class="header-right">
+            <div class="header-right" style="display:flex; align-items:center; gap:20px;">
+                <button id="refreshBtn" class="refresh-indicator-detail" title="Aggiorna Quotazione" style="background:none; border:1px solid var(--border-color); color:var(--text-muted); cursor:pointer; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
                 <div class="price-info">
                     <div id="latestPrice" class="detail-price">$0.00</div>
                     <div id="priceChange" class="detail-change">0.00%</div>
@@ -56,11 +59,11 @@
                 <div class="card-header">
                     <h2>Andamento Storico</h2>
                     <div class="chart-filters">
-                        <button class="filter-btn active" data-range="5y">5Y</button>
+                        <button class="filter-btn" data-range="5y">5Y</button>
                         <button class="filter-btn" data-range="1y">1Y</button>
                         <button class="filter-btn" data-range="6m">6M</button>
                         <button class="filter-btn" data-range="3m">3M</button>
-                        <button class="filter-btn" data-range="1m">1M</button>
+                        <button class="filter-btn active" data-range="1m">1M</button>
                     </div>
                 </div>
                 <div class="chart-wrapper">
@@ -143,6 +146,7 @@
         </div>
     </div>
 
+    <script src="twelvedata_api.js"></script>
     <script src="stock_detail.js"></script>
 </body>
 

@@ -39,11 +39,16 @@
                         <p id="exchangeFullName">New York Stock Exchange</p>
                     </div>
                 </div>
-                <div class="price-summary-box">
-                    <div class="summary-label">Ultima Chiusura (Index)</div>
-                    <div class="summary-values">
-                        <span id="indexPrice" class="summary-price">18.124,50</span>
-                        <span id="indexChange" class="summary-change positive">+1.24%</span>
+                <div class="header-right-actions">
+                    <button id="refreshBtn" class="refresh-indicator-main" title="Aggiorna Dati">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <div class="price-summary-box">
+                        <div class="summary-label">Ultima Chiusura (Index)</div>
+                        <div class="summary-values">
+                            <span id="indexPrice" class="summary-price">18.124,50</span>
+                            <span id="indexChange" class="summary-change positive">+1.24%</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -69,11 +74,11 @@
                         </a>
                     </div>
                     <div class="chart-tabs">
-                        <button class="filter-btn active" data-range="5y">5Y</button>
+                        <button class="filter-btn" data-range="5y">5Y</button>
                         <button class="filter-btn" data-range="1y">1Y</button>
                         <button class="filter-btn" data-range="6m">6M</button>
                         <button class="filter-btn" data-range="3m">3M</button>
-                        <button class="filter-btn" data-range="1m">1M</button>
+                        <button class="filter-btn active" data-range="1m">1M</button>
                     </div>
                 </div>
                 <div class="chart-wrapper">
@@ -158,6 +163,7 @@
         </div>
     </div>
 
+    <script src="twelvedata_api.js"></script>
     <script src="exchange_detail.js"></script>
 </body>
 

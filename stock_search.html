@@ -46,8 +46,11 @@
                     <h1 id="exchangeName">STOCK SEARCH</h1>
                     <p id="exchangeIndex">Ricerca Titoli e Monitor</p>
                 </div>
-                <div class="header-actions">
-                   <span id="exchangeFlag" class="fi fi-us" style="font-size: 24px;"></span>
+                <div class="header-actions" style="display:flex; align-items:center; gap:15px;">
+                    <button id="refreshBtn" class="refresh-indicator" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:18px;">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <span id="exchangeFlag" class="fi fi-us" style="font-size: 24px;"></span>
                 </div>
             </div>
         </header>
@@ -120,6 +123,7 @@
         </div>
     </div>
 
+    <script src="twelvedata_api.js"></script>
     <script src="stock_search.js"></script>
 </body>
 

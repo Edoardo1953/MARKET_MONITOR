@@ -403,6 +403,24 @@ body {
     animation: fadeIn 0.4s ease-out forwards;
 }
 
+.stock-match-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--accent-primary);
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    margin-top: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    font-weight: 500;
+}
+
+.stock-match-tag i {
+    font-size: 10px;
+}
+
 /* Mobile responsive */
 @media (max-width: 600px) {
     .exchange-grid {

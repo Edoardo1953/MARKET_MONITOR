@@ -127,6 +127,38 @@ body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Int
 .exchange-title-container h1 { font-size: 26px; font-weight: 800; letter-spacing: 1px; color: #fff; }
 .exchange-title-container p { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; margin-top: 2px; letter-spacing: 2px; }
 
+.header-right-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.refresh-indicator-main {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.refresh-indicator-main:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    background: rgba(59, 130, 246, 0.1);
+    transform: rotate(30deg);
+}
+
+.refresh-indicator-main i.fa-spin {
+    animation: fa-spin 1s linear infinite;
+}
+
 .price-summary-box {
     text-align: right;
     padding: 10px 20px;

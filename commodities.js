@@ -3,23 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let monitorItems = JSON.parse(localStorage.getItem('commodities_monitor')) || [];
     const commodityData = [
         // METALLI (Preziosi & Industriali)
-        { name: 'Oro (Gold)', symbol: 'XAU/USD', price: 2150.34, change: 0.45, category: 'Metalli' },
-        { name: 'Argento (Silver)', symbol: 'XAG/USD', price: 24.82, change: -0.12, category: 'Metalli' },
-        { name: 'Rame (Copper)', symbol: 'HG', price: 4.12, change: 0.84, category: 'Metalli' },
-        { name: 'Platino', symbol: 'PL', price: 915.20, change: -0.56, category: 'Metalli' },
-        { name: 'Palladio', symbol: 'PA', price: 984.45, change: 2.15, category: 'Metalli' },
-        { name: 'Alluminio', symbol: 'AL', price: 2240.50, change: 0.32, category: 'Metalli' },
-        { name: 'Nichel', symbol: 'NI', price: 17250.00, change: -1.20, category: 'Metalli' },
-        { name: 'Zinco', symbol: 'ZN', price: 2480.00, change: 0.45, category: 'Metalli' },
-        { name: 'Piombo', symbol: 'PB', price: 2050.00, change: -0.15, category: 'Metalli' },
-        { name: 'Stagno', symbol: 'SN', price: 28450.00, change: 1.10, category: 'Metalli' },
-        { name: 'Litio (Carbonato)', symbol: 'LI', price: 14200.00, change: -2.30, category: 'Metalli' },
-        { name: 'Ferro (Iron Ore)', symbol: 'FE', price: 108.45, change: -0.75, category: 'Metalli' },
+        { name: 'Oro (Gold)', symbol: 'XAU/USD', price: 4474.20, change: 1.25, category: 'Metalli' },
+        { name: 'Argento (Silver)', symbol: 'XAG/USD', price: 73.17, change: 3.45, category: 'Metalli' },
+        { name: 'Rame (Copper)', symbol: 'HG', price: 5.51, change: 1.62, category: 'Metalli' },
+        { name: 'Platino', symbol: 'PL', price: 1120.45, change: 0.85, category: 'Metalli' },
+        { name: 'Palladio', symbol: 'PA', price: 1245.30, change: -0.45, category: 'Metalli' },
+        { name: 'Alluminio', symbol: 'AL', price: 2650.80, change: 0.22, category: 'Metalli' },
+        { name: 'Nichel', symbol: 'NI', price: 18450.00, change: -1.12, category: 'Metalli' },
+        { name: 'Zinco', symbol: 'ZN', price: 2940.00, change: 0.65, category: 'Metalli' },
+        { name: 'Piombo', symbol: 'PB', price: 2180.00, change: -0.35, category: 'Metalli' },
+        { name: 'Stagno', symbol: 'SN', price: 31200.00, change: 1.45, category: 'Metalli' },
+        { name: 'Litio (Carbonato)', symbol: 'LI', price: 16800.00, change: -2.15, category: 'Metalli' },
+        { name: 'Ferro (Iron Ore)', symbol: 'FE', price: 124.30, change: 0.45, category: 'Metalli' },
 
         // ENERGIA
-        { name: 'Petrolio WTI', symbol: 'WTI', price: 81.42, change: 1.24, category: 'Energia' },
-        { name: 'Petrolio Brent', symbol: 'BRENT', price: 86.15, change: 1.05, category: 'Energia' },
-        { name: 'Gas Naturale', symbol: 'NG', price: 1.84, change: -3.52, category: 'Energia' },
+        { name: 'Petrolio WTI', symbol: 'WTI', price: 87.68, change: -5.10, category: 'Energia' },
+        { name: 'Petrolio Brent', symbol: 'BRENT', price: 98.28, change: -5.90, category: 'Energia' },
+        { name: 'Gas Naturale', symbol: 'NG', price: 2.93, change: -0.47, category: 'Energia' },
         { name: 'Gasolio Riscald.', symbol: 'HO', price: 2.72, change: 0.95, category: 'Energia' },
         { name: 'Benzina RBOB', symbol: 'RB', price: 2.68, change: 1.50, category: 'Energia' },
         { name: 'Etanolo', symbol: 'ETH', price: 1.58, change: 0.12, category: 'Energia' },
@@ -193,15 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function simulatePrices() {
-        // Randomly adjust prices for visual effect
         monitorItems.forEach(item => {
-            const movement = (Math.random() - 0.5) * 0.005; // 0.5% max change
+            const movement = (Math.random() - 0.5) * 0.005;
             item.price *= (1 + movement);
             item.change += movement * 100;
         });
         renderMonitor();
-        
-        // Brief glow to show update
         const rows = document.querySelectorAll('.commodity-row');
         rows.forEach(r => {
             r.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
@@ -212,7 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterBtns = document.querySelectorAll('.filter-btn');
     let activeCategory = 'all';
 
-    // 3. Functions
     function renderSearchResults(query = '', category = 'all') {
         const filtered = commodityData.filter(item => {
             const matchesQuery = item.name.toLowerCase().includes(query.toLowerCase()) || 
@@ -234,23 +230,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="category-tag">${item.category}</span>
                         </div>
                     </div>
-                    <div class="add-btn" style="cursor: pointer;" title="Aggiungi ai preferiti">
+                    <div class="add-btn" style="cursor: pointer;" title="Aggiungi">
                         <i class="fa-solid fa-plus"></i>
                     </div>
                 `;
-                
-                // Clicking the info area opens details (examining)
                 el.querySelector('.info').addEventListener('click', (e) => {
                     e.stopPropagation();
                     window.location.href = `commodity_detail.html?symbol=${encodeURIComponent(item.symbol)}`;
                 });
-
-                // Clicking the + button adds it to the list
                 el.querySelector('.add-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
                     addCommodity(item);
                 });
-
                 searchResults.appendChild(el);
             });
             searchResults.classList.remove('hidden');
@@ -260,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Listeners
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.trim();
         renderSearchResults(query, activeCategory);
@@ -280,20 +270,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Close search results when clicking outside
     document.addEventListener('click', (e) => {
         if (!searchInput.contains(e.target) && !searchResults.contains(e.target) && !e.target.closest('.category-filters')) {
             searchResults.classList.add('hidden');
         }
     });
 
-    refreshBtn.addEventListener('click', () => {
+    async function updatePricesFromAPI() {
+        const apiKey = TwelveDataAPI.getApiKey();
+        if (!apiKey || monitorItems.length === 0) return false;
+
+        try {
+            const mappedSymbols = monitorItems.map(item => {
+                if (['WTI', 'BRENT', 'NG', 'HG', 'PL', 'PA'].includes(item.symbol)) {
+                    return `${item.symbol}/USD`;
+                }
+                return item.symbol;
+            });
+            const symbolsStr = mappedSymbols.join(',');
+            const response = await fetch(`https://api.twelvedata.com/quote?symbol=${symbolsStr}&apikey=${apiKey}`);
+            const data = await response.json();
+            if (data.status === "error") throw new Error(data.message);
+            const results = mappedSymbols.length === 1 ? { [mappedSymbols[0]]: data } : data;
+            monitorItems.forEach((item, idx) => {
+                const targetSym = mappedSymbols[idx];
+                const real = results[targetSym];
+                if (real && real.close) {
+                    item.price = parseFloat(real.close);
+                    item.change = parseFloat(real.percent_change || 0);
+                }
+            });
+            saveMonitor();
+            renderMonitor();
+            return true;
+        } catch (error) {
+            console.error("Twelve Data Commodity Fetch Error:", error);
+            return false;
+        }
+    }
+
+    refreshBtn.addEventListener('click', async () => {
         const icon = refreshBtn.querySelector('i');
         icon.classList.add('fa-spin');
-        simulatePrices();
+        const success = await updatePricesFromAPI();
+        if (!success) simulatePrices();
         setTimeout(() => icon.classList.remove('fa-spin'), 1000);
     });
 
-    // 5. Initial Render
     renderMonitor();
+    updatePricesFromAPI();
 });

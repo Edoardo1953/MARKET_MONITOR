@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const cryptoCatalog = [
-        { name: 'Bitcoin', symbol: 'BTC/USD', price: 65240.50, change: 2.45, category: 'Major' },
-        { name: 'Ethereum', symbol: 'ETH/USD', price: 3480.12, change: 1.85, category: 'Major' },
+        { name: 'Bitcoin', symbol: 'BTC/USD', price: 70770.50, change: 1.12, category: 'Major' },
+        { name: 'Ethereum', symbol: 'ETH/USD', price: 2159.12, change: -0.02, category: 'Major' },
         { name: 'Solana', symbol: 'SOL/USD', price: 178.45, change: 5.12, category: 'Major' },
         { name: 'Binance Coin', symbol: 'BNB/USD', price: 592.30, change: 0.84, category: 'Major' },
         { name: 'Cardano', symbol: 'ADA/USD', price: 0.62, change: -1.20, category: 'Altcoins' },
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { labels, data, pointRadii };
     }
 
-    const initialData = generateChartData('5y');
+    const initialData = generateChartData('1m');
 
     const chartConfig = {
         type: 'line',
