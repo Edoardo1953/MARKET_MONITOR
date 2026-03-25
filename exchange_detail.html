@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Exchange Details - Market Monitor</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+
+    <!-- Style -->
+    <link rel="stylesheet" href="exchange_detail.css">
+
+    <!-- Scripts -->
+    <script src="settings.js" defer></script>
+</head>
+<body class="luxury-theme">
+
+    <div class="app-background"></div>
+
+    <div class="page-container">
+        <!-- Floating Header -->
+        <header class="exchange-header">
+            <div class="header-main">
+                <a href="stocks.html" class="nav-back-desktop">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Tutti i Mercati</span>
+                </a>
+                <div class="exchange-branding">
+                    <span id="exchangeFlag" class="fi fi-us exchange-flag-header"></span>
+                    <div class="exchange-title-container">
+                        <h1 id="exchangeName">NYSE</h1>
+                        <p id="exchangeFullName">New York Stock Exchange</p>
+                    </div>
+                </div>
+                <div class="price-summary-box">
+                    <div class="summary-label">Ultima Chiusura (Index)</div>
+                    <div class="summary-values">
+                        <span id="indexPrice" class="summary-price">18.124,50</span>
+                        <span id="indexChange" class="summary-change positive">+1.24%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-nav-inline">
+                <div id="exchangeIndexName" class="index-label-pill">S&P 500</div>
+                <div class="header-status-indicator">
+                    <span id="exchangeStatusText">MERCATO APERTO</span>
+                    <div id="exchangeStatusDot" class="status-dot status-open"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="exchange-analysis">
+            <!-- Chart Section -->
+            <section class="analysis-card chart-card">
+                <div class="chart-top-bar">
+                    <div class="chart-title-group">
+                        <h3 class="chart-title">Andamento Indice</h3>
+                        <a id="searchStocksLink" href="#" class="btn-goto-stocks">
+                            <i class="fa-solid fa-magnifying-glass-chart"></i>
+                            Ricerca Titoli e Preferiti
+                        </a>
+                    </div>
+                    <div class="chart-tabs">
+                        <button class="filter-btn active" data-range="5y">5Y</button>
+                        <button class="filter-btn" data-range="1y">1Y</button>
+                        <button class="filter-btn" data-range="6m">6M</button>
+                        <button class="filter-btn" data-range="3m">3M</button>
+                        <button class="filter-btn" data-range="1m">1M</button>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="exchangeChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Historical Data Section -->
+            <section class="analysis-card table-card">
+                <h3 id="tableTitle" class="section-title">Andamento Storico Indice</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Periodo</th>
+                                <th>Px Chiusura</th>
+                                <th>Px Apertura</th>
+                                <th>Var %</th>
+                                <th>Min</th>
+                                <th>Max</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Stocks Research Section (Level 2 Extension) -->
+            <section class="analysis-card stocks-search-card">
+                <div class="search-header">
+                    <h3 class="section-title">Ricerca Azioni in <span class="exchange-name-inline">NASDAQ</span></h3>
+                    <div class="search-box-detailed">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="stockSearch" placeholder="Cerca Azioni o Titoli (es. Apple, Ferrari...)" autocomplete="off">
+                    </div>
+                </div>
+                <div id="stocksList" class="stocks-results-list">
+                    <!-- Search results here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Side Actions bar -->
+    <div class="side-actions">
+        <div class="lang-selector">
+            <button class="lang-btn" title="English"><span class="fi fi-gb"></span></button>
+            <button class="lang-btn" title="Français"><span class="fi fi-fr"></span></button>
+            <button class="lang-btn active" title="Italiano"><span class="fi fi-it"></span></button>
+        </div>
+        <div class="secondary-actions">
+            <button class="side-icon-btn" title="Privacy">
+                <i class="fa-solid fa-user-shield"></i>
+            </button>
+            <button class="side-icon-btn" id="toolsBtn" title="Strumenti">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tools Modal -->
+    <div id="toolsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Strumenti</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tool-item">
+                    <span>Tema App</span>
+                    <button id="themeToggle" class="theme-btn">
+                        <i class="fa-solid fa-moon"></i>
+                        <span id="themeLabel">Scuro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="exchange_detail.js"></script>
+</body>
+
+</html>

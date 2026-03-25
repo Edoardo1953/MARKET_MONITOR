@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stock Exchanges - Market Monitor</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+
+    <!-- Style -->
+    <link rel="stylesheet" href="stocks.css">
+
+    <!-- Scripts -->
+    <script src="settings.js" defer></script>
+</head>
+<body class="luxury-theme">
+
+    <div class="app-background"></div>
+
+    <div class="page-container">
+        <!-- Floating Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <a href="index.html" class="back-btn" title="Torna al menu principale">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Back to Hub</span>
+                </a>
+                <div class="header-titles">
+                    <h1>STOCK EXCHANGES</h1>
+                    <p>Mercati Azionari Mondiali</p>
+                </div>
+                <div class="header-actions">
+                    <button id="refreshBtn" class="refresh-indicator">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <div id="statusDot" class="status-dot"></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-section">
+            <!-- Search & Filters -->
+            <div class="search-filter-row">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="exchangeSearch" placeholder="Cerca Borsa (es. NYSE, Milano...)" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="filters-scroll">
+                <button class="filter-chip active" data-category="Tutti">Tutti</button>
+                <button class="filter-chip" data-category="America">America</button>
+                <button class="filter-chip" data-category="Europa">Europa</button>
+                <button class="filter-chip" data-category="Asia">Asia/Pacifico</button>
+            </div>
+
+            <!-- Exchanges List -->
+            <div class="list-container">
+                <div id="exchangeList" class="exchange-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Side Actions bar -->
+    <div class="side-actions">
+        <div class="lang-selector">
+            <button class="lang-btn" title="English"><span class="fi fi-gb"></span></button>
+            <button class="lang-btn" title="Français"><span class="fi fi-fr"></span></button>
+            <button class="lang-btn active" title="Italiano"><span class="fi fi-it"></span></button>
+        </div>
+        <div class="secondary-actions">
+            <button class="side-icon-btn" title="Privacy">
+                <i class="fa-solid fa-user-shield"></i>
+            </button>
+            <button class="side-icon-btn" id="toolsBtn" title="Strumenti">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tools Modal -->
+    <div id="toolsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Strumenti</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tool-item">
+                    <span>Tema App</span>
+                    <button id="themeToggle" class="theme-btn">
+                        <i class="fa-solid fa-moon"></i>
+                        <span id="themeLabel">Scuro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="stocks.js"></script>
+</body>
+
+</html>

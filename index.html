@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARKET MONITOR - Hub</title>
+
+    <!-- Google Fonts for modern luxury typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Flag Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css?v=1.0.2">
+
+    <!-- PWA Favicon -->
+    <link rel="icon" href="assets/logo.png">
+    
+    <!-- Scripts -->
+    <script src="translations.js" defer></script>
+    <script src="settings.js" defer></script>
+</head>
+
+<body class="luxury-theme" data-theme="dark">
+    <div class="app-background"></div>
+
+    <div class="hub-container">
+        <!-- Main Logo/Header Section -->
+        <header class="hub-header">
+            <div class="logo-wrapper">
+                <img src="assets/logo.png" alt="Market Monitor" class="main-logo">
+            </div>
+            <div class="title-wrapper">
+                <h1 class="main-title">MARKET MONITOR</h1>
+                <p class="main-tagline" data-i18n="hub_tagline">Integrated Financial Data Ecosystem</p>
+            </div>
+        </header>
+
+        <!-- Main Cards Grid -->
+        <main class="hub-grid">
+            
+            <!-- 1. FOREX Card -->
+            <a href="FOREXcross/index.html" class="hub-card forex-card">
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <i class="fa-solid fa-x"></i>
+                </div>
+                <div class="card-info">
+                    <h2 class="card-title">FOREX</h2>
+                    <span class="card-subtitle" data-i18n="hub_forex_sub">Foreign Exchange Market</span>
+                </div>
+                <div class="card-arrow">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- 2. STOCKS Card -->
+            <a href="stocks.html" class="hub-card stocks-card">
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+                <div class="card-info">
+                    <h2 class="card-title">STOCKS</h2>
+                    <span class="card-subtitle" data-i18n="hub_stocks_sub">World Stock Markets</span>
+                </div>
+                <div class="card-arrow">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- 3. COMMODITIES Card -->
+            <a href="commodities.html" class="hub-card commodities-card">
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <i class="fa-solid fa-oil-well"></i>
+                </div>
+                <div class="card-info">
+                    <h2 class="card-title">COMMODITIES</h2>
+                    <span class="card-subtitle" data-i18n="hub_comm_sub">Commodities Prices</span>
+                </div>
+                <div class="card-arrow">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- 4. CRYPTOS Card -->
+            <a href="cryptos.html" class="hub-card cryptos-card">
+                <div class="card-glow"></div>
+                <div class="card-icon">
+                    <i class="fa-brands fa-bitcoin"></i>
+                </div>
+                <div class="card-info">
+                    <h2 class="card-title">CRYPTOS</h2>
+                    <span class="card-subtitle" data-i18n="hub_cryptos_sub">World Crypto currencies</span>
+                </div>
+                <div class="card-arrow">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </a>
+
+        </main>
+
+        <!-- Hub Footer -->
+        <footer class="hub-footer">
+            <p data-i18n="hub_footer">© 2026 MARKET MONITOR - Specialized Trading Hub</p>
+        </footer>
+    </div>
+
+    <!-- Side Actions bar -->
+    <div class="side-actions">
+        <div class="lang-selector">
+            <button class="lang-btn" onclick="setLanguage('en')" title="English"><span class="fi fi-gb"></span></button>
+            <button class="lang-btn" onclick="setLanguage('fr')" title="Français"><span class="fi fi-fr"></span></button>
+            <button class="lang-btn" onclick="setLanguage('it')" title="Italiano"><span class="fi fi-it"></span></button>
+        </div>
+        <div class="secondary-actions">
+            <button class="side-icon-btn" id="privacyBtn" title="Privacy" data-i18n-title="hub_privacy">
+                <i class="fa-solid fa-user-shield"></i>
+            </button>
+            <button class="side-icon-btn" id="toolsBtn" title="Strumenti" data-i18n-title="hub_tools">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tools Modal -->
+    <div id="toolsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="hub_tools">Strumenti</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tool-item">
+                    <span data-i18n="mod_theme">Tema App</span>
+                    <button id="themeToggle" class="theme-btn">
+                        <i class="fa-solid fa-moon"></i>
+                        <span id="themeLabel" data-i18n="mod_theme_dark">Scuro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Privacy Overlay -->
+    <div id="privacyOverlay" class="settings-overlay hidden">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h2 data-i18n="hub_privacy">Privacy</h2>
+                <button class="close-privacy" style="background:none; border:none; color:var(--text-secondary); font-size:24px; cursor:pointer;">&times;</button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-group">
+                    <label class="settings-group-title" data-i18n="mod_access">Condividi Accesso</label>
+                    <p class="settings-group-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Crea un link con password per fornire accesso temporaneo a terzi per l'intera App Market Monitor.</p>
+                    <div class="settings-col" style="display: flex; flex-direction: column;">
+                        <label style="font-size: 12px; margin-bottom: 4px; display: block;" data-i18n="mod_pwd">Password Accesso</label>
+                        <input type="password" id="sharePassword" placeholder="••••••••" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
+                        
+                        <label style="font-size: 12px; margin-bottom: 4px; display: block;" data-i18n="mod_duration">Durata Accesso</label>
+                        <select id="shareExpiry" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 16px;">
+                            <option value="1">1 Mese</option>
+                            <option value="3">3 Mesi</option>
+                            <option value="6">6 Mesi</option>
+                            <option value="12">1 Anno</option>
+                        </select>
+
+                        <button class="action-btn-full" onclick="generateShareLink()" style="width: 100%; background: var(--accent-blue); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Genera Link</span>
+                        </button>
+                        <div id="shareLinkResult" class="hidden" style="margin-top: 12px;">
+                            <input type="text" id="shareLinkInput" readonly style="width: 100%; background: rgba(0,0,0,0.2); border: 1px dashed var(--accent-blue); color: var(--accent-blue); padding: 8px 10px; border-radius: 6px; font-size: 11px; margin-bottom: 8px;">
+                            <button onclick="copyShareLink()" style="background: none; border: none; color: var(--accent-blue); font-size: 12px; cursor: pointer; text-decoration: underline;">Copia Link</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Access Prompt Overlay -->
+    <div id="accessOverlay" class="access-overlay hidden">
+        <div class="access-container">
+            <div class="access-icon">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2>Accesso Protetto</h2>
+            <p>Inserisci la password fornita per accedere a Market Monitor.</p>
+            
+            <div class="access-form" style="display: flex; flex-direction: column; gap: 16px;">
+                <input type="password" id="accessPasswordInput" placeholder="••••••••" style="padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-deep); color: var(--text-primary);">
+                <p id="accessError" class="access-error hidden" style="color: #ef4444; font-size: 14px; margin-top: -8px;">Password non valida.</p>
+                <button id="btnLogin" class="btn-login" style="background: var(--accent-blue); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer;">Entra</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

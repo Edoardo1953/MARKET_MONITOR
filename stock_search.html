@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ricerca Titoli - Market Monitor</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@300;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+
+    <!-- Style -->
+    <link rel="stylesheet" href="stocks.css">
+
+    <!-- Scripts -->
+    <script src="settings.js" defer></script>
+    <style>
+        .monitor-header { margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
+        .monitor-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+        .monitor-count { background: var(--accent-blue); padding: 2px 8px; border-radius: 4px; font-size: 11px; color: white; margin-left: 10px; }
+        .stock-search-container { margin-top: 40px; }
+        .fav-btn { cursor: pointer; color: var(--text-muted); font-size: 18px; transition: 0.2s; padding: 10px; }
+        .fav-btn.active { color: #f59e0b; }
+        .fav-btn:hover { transform: scale(1.2); }
+        .list-header-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    </style>
+</head>
+<body class="luxury-theme">
+
+    <div class="app-background"></div>
+
+    <div class="page-container">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <a id="backToExchange" href="stocks.html" class="back-btn" title="Torna alla selezione mercati">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Tutti i Mercati</span>
+                </a>
+                <div class="header-titles">
+                    <h1 id="exchangeName">STOCK SEARCH</h1>
+                    <p id="exchangeIndex">Ricerca Titoli e Monitor</p>
+                </div>
+                <div class="header-actions">
+                   <span id="exchangeFlag" class="fi fi-us" style="font-size: 24px;"></span>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-section">
+            
+            <!-- 1. PERSONAL MONITOR -->
+            <section id="monitorSection" style="margin-bottom: 50px;">
+                <div class="monitor-header">
+                    <div class="monitor-title">IL MIO MONITOR <span id="monitorCount" class="monitor-count">0</span></div>
+                </div>
+                <div id="monitorList" class="exchange-grid">
+                    <!-- Favorites injected here -->
+                    <div class="empty-state" style="grid-column: 1/-1; text-align: center; padding: 40px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px dashed var(--border-color); color: var(--text-muted);">
+                        Il tuo monitor è vuoto. Aggiungi titoli dalla ricerca qui sotto.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. SEARCH & LIST -->
+            <section class="stock-search-container">
+                <div class="list-header-group">
+                    <div class="monitor-title">TUTTI I TITOLI <span id="exchangeCode">NYSE</span></div>
+                </div>
+                <div class="search-box" style="margin-bottom: 30px;">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="stockSearchInput" placeholder="Cerca Azioni (es. Google, Ferrari, Amazon...)" autocomplete="off">
+                </div>
+
+                <div id="allStocksList" class="exchange-grid">
+                    <!-- Search results here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Side Actions bar -->
+    <div class="side-actions">
+        <div class="lang-selector">
+            <button class="lang-btn" title="English"><span class="fi fi-gb"></span></button>
+            <button class="lang-btn" title="Français"><span class="fi fi-fr"></span></button>
+            <button class="lang-btn active" title="Italiano"><span class="fi fi-it"></span></button>
+        </div>
+        <div class="secondary-actions">
+            <button class="side-icon-btn" title="Privacy">
+                <i class="fa-solid fa-user-shield"></i>
+            </button>
+            <button class="side-icon-btn" id="toolsBtn" title="Strumenti">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tools Modal -->
+    <div id="toolsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Strumenti</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tool-item">
+                    <span>Tema App</span>
+                    <button id="themeToggle" class="theme-btn">
+                        <i class="fa-solid fa-moon"></i>
+                        <span id="themeLabel">Scuro</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="stock_search.js"></script>
+</body>
+
+</html>

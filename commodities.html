@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARKET MONITOR - Commodities</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="commodities.css">
+
+    <link rel="icon" href="assets/logo.png">
+    
+    <script src="settings.js" defer></script>
+</head>
+
+<body class="luxury-theme">
+    <div class="app-background"></div>
+
+    <div class="page-container">
+        <!-- Header Section -->
+        <header class="page-header">
+            <a href="index.html" class="back-btn" title="Torna al menu principale">
+                <i class="fa-solid fa-chevron-left"></i>
+                <span>Back to Hub</span>
+            </a>
+            <div class="header-title">
+                <div class="title-with-icon">
+                    <i class="fa-solid fa-oil-well title-icon"></i>
+                    <h1>COMMODITIES</h1>
+                </div>
+                <p>Real-time Global Resources</p>
+            </div>
+            <div class="header-spacer"></div>
+        </header>
+
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="commoditySearch" placeholder="Cerca commodities (Oro, Petrolio, Argento...)" autocomplete="off">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <div id="searchResults" class="search-results hidden"></div>
+            </div>
+            <div class="category-filters">
+                <div class="filter-group">
+                    <button class="filter-btn active" data-category="all"><i class="fa-solid fa-border-all"></i> Tutte</button>
+                    <button class="filter-btn" data-category="Metalli"><i class="fa-solid fa-gem"></i> Metalli</button>
+                    <button class="filter-btn" data-category="Energia"><i class="fa-solid fa-bolt"></i> Energia</button>
+                    <button class="filter-btn" data-category="Agricoltura"><i class="fa-solid fa-leaf"></i> Agricoltura</button>
+                </div>
+                <button id="refreshData" class="refresh-btn-inline" title="Update Values">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- Monitor List Section -->
+        <section class="monitor-section">
+            <div class="section-header">
+                <h2>Il Mio Monitor</h2>
+                <span class="count-badge" id="monitorCount">0</span>
+            </div>
+            
+            <div id="monitorList" class="monitor-list">
+                <!-- Empty state -->
+                <div class="empty-state">
+                    <i class="fa-solid fa-oil-well"></i>
+                    <p>La tua lista è vuota. Usa la barra di ricerca per aggiungere commodities.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="hub-footer">
+            <p>© 2026 MARKET MONITOR - Data powered by Twelve Data</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="commodities.js"></script>
+</body>
+</html>
