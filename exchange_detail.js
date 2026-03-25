@@ -395,9 +395,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const series = await TwelveDataAPI.getTimeSeries(symbol, interval, outputsize);
             if (!series) throw new Error("No series data");
 
-            const tableBody = document.getElementById('historyTableBody');
+            const tableBody = document.getElementById('tableBody');
             const tableTitle = document.getElementById('tableTitle');
-            tableBody.innerHTML = '';
+            if (tableBody) tableBody.innerHTML = '';
             tableTitle.textContent = `Dati Storici Reali: ${ex.index} (${range.toUpperCase()})`;
 
             const chartLabels = [];
