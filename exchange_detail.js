@@ -361,6 +361,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let hasRealPriceData = false;
+    let hasRealHistoryData = false;
+
     async function updateChartFromAPI(range = '1m') {
         const apiKey = TwelveDataAPI.getApiKey();
         if (!apiKey) return false;
@@ -389,19 +392,19 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (range === '3m') { interval = '1day'; outputsize = 90; }
 
         try {
+            const series = await TwelveDataAPI.getTimeSeries(symbol, interval, outputsize);
+            if (!series) throw new Error("No series data");
+
             const tableBody = document.getElementById('historyTableBody');
             const tableTitle = document.getElementById('tableTitle');
             tableBody.innerHTML = '';
             tableTitle.textContent = `Dati Storici Reali: ${ex.index} (${range.toUpperCase()})`;
 
-            const series = await TwelveDataAPI.getTimeSeries(symbol, interval, outputsize);
-            if (!series) throw new Error("No series data");
-
             const chartLabels = [];
             const chartData = [];
             
             series.forEach(v => {
-                const dateStr = v.datetime.split('-').slice(1).reverse().join('/'); // MM/DD or DD/MM
+                const dateStr = v.datetime.split('-').slice(1).reverse().join('/');
                 chartLabels.push(dateStr);
                 chartData.push(v.close);
 
@@ -423,6 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
             exchangeChart.data.datasets[0].pointRadius = 3; 
             exchangeChart.update();
 
+            hasRealHistoryData = true;
             return true;
         } catch (error) {
             console.error("Twelve Data Index History Error:", error);
@@ -436,12 +440,15 @@ document.addEventListener('DOMContentLoaded', () => {
             icon.classList.add('fa-spin');
             
             const constituentsSuccess = await updateConstituentsFromAPI();
+            if (constituentsSuccess) hasRealPriceData = true;
+
             const activeBtn = document.querySelector('.filter-btn.active');
             const range = activeBtn ? activeBtn.getAttribute('data-range') : '1m';
+            
             const chartSuccess = await updateChartFromAPI(range);
             
-            if (!constituentsSuccess && !chartSuccess) {
-                // Fallback simulation (stabile, non ricreata ogni volta se possibile)
+            // Se fallisce l'API e NON abbiamo dati reali precedenti, usiamo la simulazione
+            if (!hasRealPriceData && !hasRealHistoryData) {
                 setTimeout(() => {
                     constituents.forEach(s => {
                         const fluctuation = (Math.random() - 0.5) * (s.price * 0.005);
@@ -451,22 +458,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     ex.price += idxFluc;
                     document.getElementById('indexPrice').textContent = ex.price.toLocaleString(undefined, {minimumFractionDigits: 2});
                     renderStocks(stockSearchInput.value);
+                    
+                    const newData = generateChartData(range);
+                    exchangeChart.data.labels = newData.labels;
+                    exchangeChart.data.datasets[0].data = newData.data;
+                    exchangeChart.update();
+                    
                     icon.classList.remove('fa-spin');
-
-                    if (activeBtn) {
-                        const newData = generateChartData(range);
-                        exchangeChart.data.labels = newData.labels;
-                        exchangeChart.data.datasets[0].data = newData.data;
-                        exchangeChart.update();
-                    }
                 }, 800);
             } else {
+                // Se abbiamo dati reali, l'update è già stato fatto dall'API (o manteniamo il dato precedente)
                 icon.classList.remove('fa-spin');
+                if (!chartSuccess && hasRealHistoryData) {
+                    console.log("Mantenimento grafico reale precedente causa limite API");
+                }
             }
         });
     }
 
     renderStocks();
-    updateConstituentsFromAPI();
-    updateChartFromAPI('1m');
+    updateConstituentsFromAPI().then(s => hasRealPriceData = s);
+    updateChartFromAPI('1m').then(s => hasRealHistoryData = s);
 });
