@@ -100,6 +100,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Refresh simulation
     const refreshBtn = document.getElementById('refreshBtn');
     const statusDot = document.getElementById('statusDot');
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    
+    function updateTimestamp() {
+        const now = new Date();
+        lastUpdatedEl.textContent = `Aggiornato: ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+    }
     
     refreshBtn.addEventListener('click', () => {
         refreshBtn.classList.add('fa-spin');
@@ -108,10 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             refreshBtn.classList.remove('fa-spin');
             statusDot.style.background = '#10b981';
+            updateTimestamp();
             renderExchanges();
         }, 1200);
     });
 
     // Initial Render
     renderExchanges();
+    updateTimestamp();
 });
