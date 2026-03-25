@@ -1,21 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions
     const exchangeCatalog = {
-        'nyse': { name: 'NYSE', fullName: 'New York Stock Exchange', country: 'Stati Uniti', flag: 'fi fi-us', index: 'S&P 500', price: 6556.37, change: 0.85, basePrice: 6200, currency: '$' },
-        'nasdaq': { name: 'NASDAQ', fullName: 'NASDAQ Stock Market', country: 'Stati Uniti', flag: 'fi fi-us', index: 'Nasdaq 100', price: 24267.57, change: 1.15, basePrice: 22000, currency: '$' },
-        'borit': { name: 'Borsa Italiana', fullName: 'Borsa Italiana S.p.A.', country: 'Italia', flag: 'fi fi-it', index: 'FTSE MIB', price: 43369.53, change: 0.42, basePrice: 40000, currency: '€' },
-        'lse': { name: 'London SE', fullName: 'London Stock Exchange', country: 'Regno Unito', flag: 'fi fi-gb', index: 'FTSE 100', price: 10086.74, change: 0.25, basePrice: 9500, currency: '£' },
-        'dax': { name: 'Deutsche Börse', fullName: 'Frankfurt Stock Exchange', country: 'Germania', flag: 'fi fi-de', index: 'DAX 40', price: 23028.79, change: 0.65, basePrice: 21000, currency: '€' },
-        'cac': { name: 'Euronext Paris', fullName: 'Euronext Paris (CAC)', country: 'Francia', flag: 'fi fi-fr', index: 'CAC 40', price: 7849.02, change: -0.15, basePrice: 8000, currency: '€' },
-        'tse': { name: 'Tokyo SE', fullName: 'Tokyo Stock Exchange', country: 'Giappone', flag: 'fi fi-jp', index: 'Nikkei 225', price: 53749.62, change: 1.45, basePrice: 45000, currency: '¥' },
-        'hkex': { name: 'HKEX', fullName: 'Hong Kong Exchanges', country: 'Hong Kong', flag: 'fi fi-hk', index: 'Hang Seng', price: 25335.95, change: 0.75, basePrice: 22000, currency: 'HK$' },
-        'bovespa': { name: 'B3 Bovespa', fullName: 'Brasil Bolsa Balcão', country: 'Brasile', flag: 'fi fi-br', index: 'Ibovespa', price: 184493.48, change: 0.35, basePrice: 160000, currency: 'R$' },
-        'tsx': { name: 'Toronto SE', fullName: 'Toronto Stock Exchange', country: 'Canada', flag: 'fi fi-ca', index: 'S&P/TSX', price: 25850.40, change: 0.22, basePrice: 23000, currency: 'C$' },
-        'asx': { name: 'ASX', fullName: 'Australian Securities Exchange', country: 'Australia', flag: 'fi fi-au', index: 'S&P/ASX 200', price: 8450.12, change: 0.55, basePrice: 7800, currency: 'A$' },
-        'sse': { name: 'Shanghai SE', fullName: 'Shanghai Stock Exchange', country: 'Cina', flag: 'fi fi-cn', index: 'SSE Composite', price: 3450.60, change: -0.45, basePrice: 3200, currency: '¥' },
-        'six': { name: 'SIX Swiss', fullName: 'SIX Swiss Exchange', country: 'Svizzera', flag: 'fi fi-ch', index: 'SMI', price: 12450.80, change: 0.35, basePrice: 11000, currency: 'CHF' },
-        'ibex': { name: 'Bolsa Madrid', fullName: 'Bolsa de Madrid (IBEX)', country: 'Spagna', flag: 'fi fi-es', index: 'IBEX 35', price: 11840.20, change: 0.12, basePrice: 10500, currency: '€' },
-        'eurnex': { name: 'Euronext AMS', fullName: 'Euronext Amsterdam', country: 'Paesi Bassi', flag: 'fi fi-nl', index: 'AEX', price: 945.45, change: 0.85, basePrice: 850, currency: '€' }
+        'nyse': { name: 'NYSE', fullName: 'New York Stock Exchange', country: 'Stati Uniti', flag: 'fi fi-us', index: 'S&P 500', price: 6626.65, change: 1.07, basePrice: 6500, currency: '$' },
+        'nasdaq': { name: 'NASDAQ', fullName: 'NASDAQ Stock Market', country: 'Stati Uniti', flag: 'fi fi-us', index: 'Nasdaq 100', price: 24042.23, change: 0.95, basePrice: 23500, currency: '$' },
+        'borit': { name: 'Borsa Italiana', fullName: 'Borsa Italiana S.p.A.', country: 'Italia', flag: 'fi fi-it', index: 'FTSE MIB', price: 43369.53, change: 0.42, basePrice: 42000, currency: '€' },
+        'lse': { name: 'London SE', fullName: 'London Stock Exchange', country: 'Regno Unito', flag: 'fi fi-gb', index: 'FTSE 100', price: 10075.76, change: 1.05, basePrice: 9800, currency: '£' },
+        'dax': { name: 'Deutsche Börse', fullName: 'Frankfurt Stock Exchange', country: 'Germania', flag: 'fi fi-de', index: 'DAX 40', price: 22960.37, change: 1.43, basePrice: 22000, currency: '€' },
+        'cac': { name: 'Euronext Paris', fullName: 'Euronext Paris (CAC)', country: 'Francia', flag: 'fi fi-fr', index: 'CAC 40', price: 7858.02, change: 1.47, basePrice: 7700, currency: '€' },
+        'tse': { name: 'Tokyo SE', fullName: 'Tokyo Stock Exchange', country: 'Giappone', flag: 'fi fi-jp', index: 'Nikkei 225', price: 53749.62, change: 1.45, basePrice: 50000, currency: '¥' },
+        'hkex': { name: 'HKEX', fullName: 'Hong Kong Exchanges', country: 'Hong Kong', flag: 'fi fi-hk', index: 'Hang Seng', price: 25335.95, change: 0.75, basePrice: 24000, currency: 'HK$' },
+        'bovespa': { name: 'B3 Bovespa', fullName: 'Brasil Bolsa Balcão', country: 'Brasile', flag: 'fi fi-br', index: 'Ibovespa', price: 184493.48, change: 0.35, basePrice: 180000, currency: 'R$' },
+        'tsx': { name: 'Toronto SE', fullName: 'Toronto Stock Exchange', country: 'Canada', flag: 'fi fi-ca', index: 'S&P/TSX', price: 25850.40, change: 0.22, basePrice: 25000, currency: 'C$' },
+        'asx': { name: 'ASX', fullName: 'Australian Securities Exchange', country: 'Australia', flag: 'fi fi-au', index: 'S&P/ASX 200', price: 8450.12, change: 0.55, basePrice: 8200, currency: 'A$' },
+        'sse': { name: 'Shanghai SE', fullName: 'Shanghai Stock Exchange', country: 'Cina', flag: 'fi fi-cn', index: 'SSE Composite', price: 3450.60, change: -0.45, basePrice: 3400, currency: '¥' },
+        'six': { name: 'SIX Swiss', fullName: 'SIX Swiss Exchange', country: 'Svizzera', flag: 'fi fi-ch', index: 'SMI', price: 12450.80, change: 0.35, basePrice: 12000, currency: 'CHF' },
+        'ibex': { name: 'Bolsa Madrid', fullName: 'Bolsa de Madrid (IBEX)', country: 'Spagna', flag: 'fi fi-es', index: 'IBEX 35', price: 17169.90, change: 1.54, basePrice: 16500, currency: '€' },
+        'eurnex': { name: 'Euronext AMS', fullName: 'Euronext Amsterdam', country: 'Paesi Bassi', flag: 'fi fi-nl', index: 'AEX', price: 945.45, change: 0.85, basePrice: 900, currency: '€' }
     };
 
     const stockConstituents = {
@@ -361,14 +361,87 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function updateChartFromAPI(range = '1m') {
+        const apiKey = TwelveDataAPI.getApiKey();
+        if (!apiKey) return false;
+
+        const indexMap = {
+            'S&P 500': 'SPX',
+            'Nasdaq 100': 'NDX',
+            'FTSE MIB': 'FTSEMIB',
+            'FTSE 100': 'FTSE',
+            'DAX 40': 'DAX',
+            'CAC 40': 'PX1',
+            'Nikkei 225': 'N225',
+            'Hang Seng': 'HSI',
+            'Ibovespa': 'IBOV',
+            'IBEX 35': 'IBEX',
+            'AEX': 'AEX'
+        };
+
+        const symbol = indexMap[ex.index];
+        if (!symbol) return false;
+
+        let interval = '1day';
+        let outputsize = 30;
+        if (range === '1y') { interval = '1week'; outputsize = 52; }
+        else if (range === '6m') { interval = '1week'; outputsize = 26; }
+        else if (range === '3m') { interval = '1day'; outputsize = 90; }
+
+        try {
+            const tableBody = document.getElementById('historyTableBody');
+            const tableTitle = document.getElementById('tableTitle');
+            tableBody.innerHTML = '';
+            tableTitle.textContent = `Dati Storici Reali: ${ex.index} (${range.toUpperCase()})`;
+
+            const series = await TwelveDataAPI.getTimeSeries(symbol, interval, outputsize);
+            if (!series) throw new Error("No series data");
+
+            const chartLabels = [];
+            const chartData = [];
+            
+            series.forEach(v => {
+                const dateStr = v.datetime.split('-').slice(1).reverse().join('/'); // MM/DD or DD/MM
+                chartLabels.push(dateStr);
+                chartData.push(v.close);
+
+                const row = document.createElement('tr');
+                const varPct = (((v.close - v.open) / v.open) * 100).toFixed(2);
+                row.innerHTML = `
+                    <td>${v.datetime}</td>
+                    <td>${v.close.toLocaleString()}</td>
+                    <td>${v.open.toLocaleString()}</td>
+                    <td class="${varPct >= 0 ? 'price-up' : 'price-down'}">${varPct >= 0 ? '+' : ''}${varPct}%</td>
+                    <td>${v.low.toLocaleString()}</td>
+                    <td>${v.high.toLocaleString()}</td>
+                `;
+                tableBody.prepend(row);
+            });
+
+            exchangeChart.data.labels = chartLabels;
+            exchangeChart.data.datasets[0].data = chartData;
+            exchangeChart.data.datasets[0].pointRadius = 3; 
+            exchangeChart.update();
+
+            return true;
+        } catch (error) {
+            console.error("Twelve Data Index History Error:", error);
+            return false;
+        }
+    }
+
     if (refreshBtn) {
         refreshBtn.addEventListener('click', async () => {
             const icon = refreshBtn.querySelector('i');
             icon.classList.add('fa-spin');
             
-            const success = await updateConstituentsFromAPI();
+            const constituentsSuccess = await updateConstituentsFromAPI();
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const range = activeBtn ? activeBtn.getAttribute('data-range') : '1m';
+            const chartSuccess = await updateChartFromAPI(range);
             
-            if (!success) {
+            if (!constituentsSuccess && !chartSuccess) {
+                // Fallback simulation (stabile, non ricreata ogni volta se possibile)
                 setTimeout(() => {
                     constituents.forEach(s => {
                         const fluctuation = (Math.random() - 0.5) * (s.price * 0.005);
@@ -379,22 +452,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('indexPrice').textContent = ex.price.toLocaleString(undefined, {minimumFractionDigits: 2});
                     renderStocks(stockSearchInput.value);
                     icon.classList.remove('fa-spin');
+
+                    if (activeBtn) {
+                        const newData = generateChartData(range);
+                        exchangeChart.data.labels = newData.labels;
+                        exchangeChart.data.datasets[0].data = newData.data;
+                        exchangeChart.update();
+                    }
                 }, 800);
             } else {
                 icon.classList.remove('fa-spin');
-            }
-
-            const activeBtn = document.querySelector('.filter-btn.active');
-            if (activeBtn) {
-                const range = activeBtn.getAttribute('data-range');
-                const newData = generateChartData(range);
-                exchangeChart.data.labels = newData.labels;
-                exchangeChart.data.datasets[0].data = newData.data;
-                exchangeChart.update();
             }
         });
     }
 
     renderStocks();
     updateConstituentsFromAPI();
+    updateChartFromAPI('1m');
 });
