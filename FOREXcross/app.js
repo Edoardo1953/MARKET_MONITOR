@@ -85,6 +85,10 @@ function triggerCustomFetch() {
         currentBaseCurrency = base;
         currentTargetCurrency = target;
         
+        // Save selected currencies to sessionStorage
+        sessionStorage.setItem('custom_base_currency', base);
+        sessionStorage.setItem('custom_target_currency', target);
+        
         updateLabels();
 
         const globalLoader = document.getElementById('globalLoader');
@@ -140,7 +144,7 @@ async function fetchAllAvailableCurrencies() {
     }
 
     try {
-        const response = await fetch('https://api.frankfurter.app/currencies');
+        const response = await fetch('https://api.frankfurter.dev/v1/currencies');
         if (response.ok) {
             allAvailableCurrencies = await response.json();
             localStorage.setItem('frankfurter_currencies', JSON.stringify(allAvailableCurrencies));
@@ -148,15 +152,58 @@ async function fetchAllAvailableCurrencies() {
     } catch (e) {
         console.warn("Could not fetch full currency list", e);
     }
+
+    // FALLBACK if both local cache and API fetch failed (e.g. CORS / offline / file:// protocol)
+    if (!allAvailableCurrencies || Object.keys(allAvailableCurrencies).length === 0) {
+        allAvailableCurrencies = {
+            "EUR": "Euro",
+            "USD": "United States Dollar",
+            "BRL": "Brazilian Real",
+            "GBP": "British Pound",
+            "CAD": "Canadian Dollar",
+            "HKD": "Hong Kong Dollar",
+            "JPY": "Japanese Yen",
+            "CHF": "Swiss Franc",
+            "AUD": "Australian Dollar",
+            "CNY": "Chinese Renminbi Yuan",
+            "NZD": "New Zealand Dollar",
+            "SGD": "Singapore Dollar",
+            "SEK": "Swedish Krona",
+            "MXN": "Mexican Peso",
+            "INR": "Indian Rupee",
+            "ZAR": "South African Rand",
+            "KRW": "South Korean Won",
+            "TRY": "Turkish Lira",
+            "NOK": "Norwegian Krone",
+            "DKK": "Danish Krone",
+            "PLN": "Polish Złoty",
+            "HUF": "Hungarian Forint",
+            "CZK": "Czech Koruna",
+            "ILS": "Israeli New Shekel",
+            "PHP": "Philippine Peso",
+            "IDR": "Indonesian Rupiah",
+            "MYR": "Malaysian Ringgit",
+            "THB": "Thai Baht",
+            "BGN": "Bulgarian Lev",
+            "RON": "Romanian Leu",
+            "ISK": "Icelandic Króna"
+        };
+    }
 }
 
 function openSearchOverlay(target) {
     currentSearchTarget = target;
     if (searchOverlay) {
         searchOverlay.classList.remove('hidden');
-        renderSearchResults('');
         searchResults.scrollTop = 0;
         setTimeout(() => searchInput.focus(), 100);
+        // If currencies not yet loaded, fetch them now and retry
+        if (Object.keys(allAvailableCurrencies).length === 0) {
+            renderSearchResults('');
+            fetchAllAvailableCurrencies().then(() => renderSearchResults(searchInput ? searchInput.value.toUpperCase() : ''));
+        } else {
+            renderSearchResults('');
+        }
     }
 }
 
@@ -174,13 +221,18 @@ function setupSearchListeners() {
 function renderSearchResults(query = '') {
     if (!searchResults) return;
     searchResults.innerHTML = '';
-    
+
+    if (Object.keys(allAvailableCurrencies).length === 0) {
+        searchResults.innerHTML = `<li style="text-align:center; padding: 20px; color: var(--text-secondary); opacity: 0.7; font-size: 13px;">${getTranslation('loading_rates') || 'Caricamento divise...'}</li>`;
+        return;
+    }
+
     const filtered = Object.entries(allAvailableCurrencies).filter(([code, name]) => {
         return code.includes(query) || name.toUpperCase().includes(query);
     });
 
-    if (Object.keys(allAvailableCurrencies).length === 0) {
-        searchResults.innerHTML = `<li style="text-align:center; padding: 20px; color: var(--text-secondary); opacity: 0.7; font-size: 13px;">${getTranslation('loading_rates') || 'Caricamento divise...'}</li>`;
+    if (filtered.length === 0) {
+        searchResults.innerHTML = `<li style="text-align:center; padding: 20px; color: var(--text-secondary); opacity: 0.7; font-size: 13px;">Nessun risultato per "${query}"</li>`;
         return;
     }
 
@@ -304,9 +356,9 @@ document.getElementById('exportExcelBtn').addEventListener('click', exportDataba
 
 // --- Initialization Logic ---
 document.addEventListener('DOMContentLoaded', () => {
-    // ALWAYS Default to EUR / USD on load as requested
-    currentBaseCurrency = 'EUR';
-    currentTargetCurrency = 'USD';
+    // Load from sessionStorage if present, otherwise default to EUR / USD
+    currentBaseCurrency = sessionStorage.getItem('custom_base_currency') || 'EUR';
+    currentTargetCurrency = sessionStorage.getItem('custom_target_currency') || 'USD';
 
     updateGroupTitles();
 
@@ -335,10 +387,32 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('themeChanged', () => {
         updateDashboardUI();
     });
+
+    // ── AUTO-REFRESH DATI LIVE ──────────────────────────────────────────
+    // Aggiorna i cambi ogni 30 minuti se la pagina è aperta
+    const REFRESH_INTERVAL_MS = 15 * 60 * 1000; // 15 minuti
+    setInterval(() => {
+        console.log('Auto-refresh: ricarico dati live...');
+        initializeData();
+    }, REFRESH_INTERVAL_MS);
+
+    // Aggiorna anche quando l'utente torna sulla tab dopo essere stato altrove
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            const lastRefresh = parseInt(sessionStorage.getItem('lastRefreshTime') || '0', 10);
+            const now = Date.now();
+            // Ricarica solo se sono passati più di 5 minuti dall'ultimo refresh
+            if (now - lastRefresh > 5 * 60 * 1000) {
+                console.log('Tab tornata visibile: ricarico dati live...');
+                initializeData();
+            }
+        }
+    });
 });
 
 async function initializeData() {
     console.log("Initializing Dashboard Data Integration...");
+    sessionStorage.setItem('lastRefreshTime', Date.now().toString());
     
     // Abort any existing sync process
     if (syncAbortController) {
@@ -360,9 +434,10 @@ async function initializeData() {
         // Hide loader, show dashboard content
         if(globalLoader) globalLoader.classList.add('hidden');
         if(dashboardDataContainer) dashboardDataContainer.classList.remove('hidden');
-        
-        // Final UI updates
-        // REMOVED redundant updateDashboardUI() here as fetchLiveData already handles initial and background renders efficiently
+
+        // Aggiorna il tasso live con open.er-api (stesso provider del Calculator)
+        // Chiamata senza signal per non essere interrotta dal sync storico
+        fetchRealTimeLiveRate();
     } catch (e) {
         if (e.name === 'AbortError') return;
         console.error("Initialization Failed", e);
@@ -380,24 +455,130 @@ async function initializeData() {
     }
 }
 
+// ── TASSO LIVE REAL-TIME ──────────────────────────────────────────────────────
+// Legge prima dal localStorage condiviso con il Calculator (aggiornato da intro.js).
+// Solo se il valore è vecchio (>5 min) o assente, chiama le API direttamente.
+// Questo garantisce che entrambe le pagine mostrino ESATTAMENTE lo stesso numero.
+async function fetchRealTimeLiveRate() {
+    const STALE_MS = 5 * 60 * 1000; // 5 minuti
+    const cacheKey = `realtime_rate_${currentBaseCurrency}_${currentTargetCurrency}`;
+    let liveRate = null;
+    let rateSource = '';
+
+    // ── 1. Leggi dal localStorage condiviso con il Calculator ────────────────
+    try {
+        const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+        if (cached && cached.rate && (Date.now() - cached.ts) < STALE_MS) {
+            liveRate = cached.rate;
+            rateSource = cached.src || 'cache';
+            console.log(`✅ Shared cache (${rateSource}): ${currentBaseCurrency}/${currentTargetCurrency} = ${liveRate}`);
+        }
+    } catch (e) {}
+
+    // ── 2. Se non c'è cache fresca, chiama le API ────────────────────────────
+    if (!liveRate) {
+        const rtController = new AbortController();
+        const timeoutId = setTimeout(() => rtController.abort(), 10000);
+        try {
+            // Prima prova Twelve Data (solo per EUR/USD con demo key)
+            const userKey = localStorage.getItem('twelvedata_apikey');
+            const isDemoPair = (currentBaseCurrency === 'EUR' && currentTargetCurrency === 'USD') ||
+                               (currentBaseCurrency === 'USD' && currentTargetCurrency === 'EUR');
+            if (userKey || isDemoPair) {
+                try {
+                    const apiKey = userKey || 'demo';
+                    const tdUrl = `https://api.twelvedata.com/exchange_rate?symbol=${currentBaseCurrency}/${currentTargetCurrency}&apikey=${apiKey}`;
+                    const tdResp = await fetch(tdUrl, { signal: rtController.signal });
+                    if (tdResp.ok) {
+                        const tdData = await tdResp.json();
+                        if (tdData && tdData.rate && !tdData.code) {
+                            liveRate = parseFloat(tdData.rate);
+                            rateSource = 'twelvedata';
+                            console.log(`✅ Twelve Data: ${currentBaseCurrency}/${currentTargetCurrency} = ${liveRate}`);
+                        }
+                    }
+                } catch (tdErr) {
+                    if (tdErr.name !== 'AbortError') console.warn('Twelve Data fallback');
+                }
+            }
+
+            // Fallback: open.er-api
+            if (!liveRate) {
+                const resp = await fetch(`https://open.er-api.com/v6/latest/${currentBaseCurrency}`, { signal: rtController.signal });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    if (data && data.rates && data.rates[currentTargetCurrency]) {
+                        liveRate = data.rates[currentTargetCurrency];
+                        rateSource = 'open.er-api';
+                        console.log(`✅ open.er-api: ${currentBaseCurrency}/${currentTargetCurrency} = ${liveRate}`);
+                    }
+                }
+            }
+            clearTimeout(timeoutId);
+
+            // Salva in localStorage per condivisione futura
+            if (liveRate) {
+                localStorage.setItem(cacheKey, JSON.stringify({ rate: liveRate, ts: Date.now(), src: rateSource }));
+            }
+        } catch (e) {
+            clearTimeout(timeoutId);
+            if (e && e.name !== 'AbortError') console.warn('fetchRealTimeLiveRate API failed:', e);
+        }
+    }
+
+    if (!liveRate) return;
+
+    // ── Aggiorna UI ───────────────────────────────────────────────────────────
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    const latestRateElement = document.getElementById('latestRate');
+    if (latestRateElement) {
+        latestRateElement.innerHTML = APP_UTILS.formatCurrency(liveRate, currentTargetCurrency);
+    }
+
+    const latestDateElement = document.getElementById('latestDate');
+    if (latestDateElement) {
+        latestDateElement.innerHTML = `<span style="font-size:10px; background:#22c55e; color:white; padding:2px 8px; border-radius:20px; font-weight:700; letter-spacing:0.5px;">REAL-TIME (${timeStr})</span>`;
+    }
+
+    // Variazione % rispetto all'ultimo dato storico
+    if (historicalRateList.length > 0) {
+        const prevRate = historicalRateList[historicalRateList.length - 1].rate;
+        const trendEl = document.getElementById('brlTrend');
+        const trendParent = trendEl ? trendEl.parentElement : null;
+        if (trendParent && prevRate) {
+            const pct = ((liveRate - prevRate) / prevRate) * 100;
+            if (pct >= 0) {
+                trendParent.className = 'trend positive';
+                trendParent.innerHTML = `<i class="fa-solid fa-arrow-up"></i> <span id="brlTrend">${Math.abs(pct).toFixed(2)}%</span> ${getTranslation('from_prev')}`;
+            } else {
+                trendParent.className = 'trend negative';
+                trendParent.innerHTML = `<i class="fa-solid fa-arrow-down"></i> <span id="brlTrend">${Math.abs(pct).toFixed(2)}%</span> ${getTranslation('from_prev')}`;
+            }
+        }
+    }
+}
+
 // historicalBrlRateList removed and replaced by historicalRateList below
 
 // Re-render all dashboard elements
 function updateDashboardUI() {
     console.log(`Updating dashboard with base currency: ${currentBaseCurrency}`);
 
-    // Update the UI texts
+    // Update the UI texts — il tasso live viene gestito da fetchRealTimeLiveRate()
+    // updateDashboardUI aggiorna solo la struttura, non sovrascrive il badge REAL-TIME
     const latestRateElement = document.getElementById('latestRate');
+    const latestDateElement = document.getElementById('latestDate');
     if (latestRateElement && historicalRateList.length > 0) {
-        // Assume last item is the most recent
         const lastRecord = historicalRateList[historicalRateList.length - 1];
         const prevRecord = historicalRateList.length > 1 ? historicalRateList[historicalRateList.length - 2] : null;
 
-        latestRateElement.innerHTML = APP_UTILS.formatCurrency(lastRecord.rate, currentTargetCurrency);
-
-        const latestDateElement = document.getElementById('latestDate');
-        if (latestDateElement) {
-            latestDateElement.innerHTML = '';
+        // Mostra il tasso BCE solo se non c'è già un valore REAL-TIME
+        const hasRealTime = latestDateElement && latestDateElement.innerHTML.includes('REAL-TIME');
+        if (!hasRealTime) {
+            latestRateElement.innerHTML = APP_UTILS.formatCurrency(lastRecord.rate, currentTargetCurrency);
+            if (latestDateElement) latestDateElement.innerHTML = '';
         }
 
         const trendEl = document.getElementById('brlTrend');
@@ -417,6 +598,7 @@ function updateDashboardUI() {
         }
     }
 
+
     updateLabels();
 
     // Render the chart
@@ -435,19 +617,19 @@ function updateDashboardUI() {
 const SAFE_HISTORY_DATA = {
     'EUR_BRL': [
         { d: "01/01/2016", r: 4.30 }, { d: "01/01/2020", r: 4.60 }, 
-        { d: "01/01/2025", r: 6.18 }
+        { d: "01/01/2025", r: 5.85 }, { d: "01/07/2026", r: 5.84 }
     ],
     'USD_BRL': [
         { d: "01/01/2016", r: 3.90 }, { d: "01/01/2020", r: 4.05 }, 
-        { d: "01/01/2025", r: 5.85 }
+        { d: "01/01/2025", r: 5.08 }, { d: "01/07/2026", r: 5.09 }
     ],
     'EUR_USD': [
         { d: "01/01/2016", r: 1.09 }, { d: "01/01/2020", r: 1.12 }, 
-        { d: "01/01/2025", r: 1.05 }
+        { d: "01/01/2025", r: 1.04 }, { d: "01/07/2026", r: 1.14 }
     ],
     'USD_EUR': [
         { d: "01/01/2016", r: 0.92 }, { d: "01/01/2020", r: 0.89 }, 
-        { d: "01/01/2025", r: 0.95 }
+        { d: "01/01/2025", r: 0.96 }, { d: "01/07/2026", r: 0.88 }
     ]
 };
 
@@ -460,28 +642,47 @@ async function fetchLiveData(signal) {
     const storageKey = `forex_api_data_${currentBaseCurrency}_${currentTargetCurrency}`;
     const uniqueMap = new Map();
 
-    // 2. RECUPERO CACHE (Istante)
+    // 1. RECUPERO CACHE (Istante) — carica TUTTI i dati storici inclusi anni precedenti
     try {
         const saved = localStorage.getItem(storageKey);
         if (saved) {
             const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed)) {
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                // ── CONTROLLO FRESCHEZZA CACHE ──────────────────────────────
+                // Se l'ultimo dato live è più vecchio di 7 giorni, forza solo
+                // il re-download degli ultimi 365 giorni (non cancellare tutto!)
+                const sortedByDate = parsed
+                    .filter(item => item.dateObj && item.isLive)
+                    .sort((a, b) => new Date(b.dateObj) - new Date(a.dateObj));
+
                 const limit = new Date(); limit.setFullYear(today.getFullYear() - 10);
+
+                // Carica SEMPRE tutti i dati dalla cache (live e non-live = storico anni)
                 parsed.forEach(item => {
-                    if (!item.dateObj || !item.dateStr || item.rate === undefined) return;
-                    const dObj = new Date(item.dateObj);
-                    if (dObj >= limit) {
-                        if (!item.isLive) return;
-                        uniqueMap.set(item.dateStr, { ...item, dateObj: dObj });
+                    if (!item.dateStr || item.rate === undefined) return;
+                    // dateObj è ricostruito da dateStr per evitare offset timezone
+                    const dObj = APP_UTILS.parseDate(item.dateStr);
+                    if (!isNaN(dObj.getTime()) && dObj >= limit) {
+                        uniqueMap.set(item.dateStr, { dateStr: item.dateStr, rate: item.rate, dateObj: dObj, isLive: !!item.isLive });
                     }
                 });
+
+                if (sortedByDate.length > 0) {
+                    const lastDate = new Date(sortedByDate[0].dateObj);
+                    const daysDiff = (today - lastDate) / (1000 * 60 * 60 * 24);
+                    if (daysDiff > 7) {
+                        console.warn(`Cache ${storageKey} obsoleta (${daysDiff.toFixed(0)}gg): forzo refresh ultimi 365g.`);
+                        // Non cancelliamo la cache, la aggiorneremo con i nuovi dati
+                    }
+                }
             }
         }
     } catch (e) {
         console.warn("Could not load cache for", storageKey, e);
     }
 
-    // 3. RENDER IMMEDIATO
+
+    // 2. RENDER IMMEDIATO
     if (signal && signal.aborted) return;
     
     // Se la cache è vuota, aggiungiamo un dato statico di emergenza per non mostrare il grafico vuoto mentre carica
@@ -494,37 +695,47 @@ async function fetchLiveData(signal) {
             });
         }
     }
-    
+
+    const statusEl2 = document.getElementById('syncStatus');
+    if (statusEl2) statusEl2.innerHTML = `<i class="fa-solid fa-database"></i> Cache: ${uniqueMap.size} record — sincronizzazione...`;
     saveAndRenderAll(uniqueMap, storageKey, true); // initial render
 
-    // 4. AVVIO SYNC API IN BACKGROUND (CON DEBOUNCE)
+    // 3. AVVIO SYNC API IN BACKGROUND
     if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-sync fa-spin"></i> ${getTranslation('sync_progress')}`;
     
-    // Timeout per evitare che il sync parta troppo velocemente durante lo switch di valute
     setTimeout(async () => {
         try {
             if (signal && signal.aborted) return;
             const today = new Date();
-            const startDay = new Date(); startDay.setDate(today.getDate() - 90);
+            const startDay = new Date(); startDay.setDate(today.getDate() - 365);
             
-            // Scarica ultimi 3 mesi
+            // Scarica ultimi 12 mesi
             await fetchAndMergeRange(startDay, today, uniqueMap, signal);
             if (signal && signal.aborted) return;
             
-            // Salva ma non renderizzare tutto il Database ancora (pesante)
-            syncGlobalList(uniqueMap);
-            saveToCache(storageKey, historicalRateList);
-            renderChart(); 
-            renderTable();
+            // Rimuovi solo i dati statici di emergenza (isLive: false) che ricadono
+            // nell'intervallo appena scaricato. NON toccare i dati storici degli anni precedenti.
+            const hasLiveRecords = Array.from(uniqueMap.values()).some(item => item.isLive);
+            if (hasLiveRecords) {
+                for (const [k, v] of uniqueMap.entries()) {
+                    if (!v.isLive && v.dateObj >= startDay) {
+                        uniqueMap.delete(k); // cancella solo i placeholder nel range 365gg
+                    }
+                }
+            }
 
-            // Scarica tutto lo storico mancante
+            // Salva ed esegui un render completo della UI per aggiornare la scheda con il cambio reale
+            saveAndRenderAll(uniqueMap, storageKey, true);
+
+            // Scarica tutto lo storico mancante in background
             await backgroundDeepSync(uniqueMap, storageKey, signal);
         } catch (err) {
             if (err.name === 'AbortError') return;
             console.warn("Background sync error", err);
             if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${getTranslation('offline_mode')}`;
         }
-    }, 500);
+    }, 200);
+
 
     return true; 
 }
@@ -533,7 +744,7 @@ async function fetchAndMergeRange(start, end, map, signal) {
     const sStr = start.toISOString().split('T')[0];
     const eStr = end.toISOString().split('T')[0];
     try {
-        let url = `https://api.frankfurter.app/${sStr}..${eStr}?to=${currentTargetCurrency}`;
+        let url = `https://api.frankfurter.dev/v1/${sStr}..${eStr}?to=${currentTargetCurrency}`;
         if (currentBaseCurrency !== 'EUR') url += `&from=${currentBaseCurrency}`;
         
         console.log(`Fetching: ${url}`);
@@ -544,9 +755,9 @@ async function fetchAndMergeRange(start, end, map, signal) {
             if (data && data.rates) {
                 let added = 0;
                 for (const [dStr, rates] of Object.entries(data.rates)) {
-                    if (rates[currentTargetCurrency]) {
+                    if (rates && rates[currentTargetCurrency] !== undefined) {
                         const p = dStr.split('-');
-                        const dObj = new Date(p[0], p[1]-1, p[2]);
+                        const dObj = new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
                         const label = `${String(dObj.getDate()).padStart(2,'0')}/${String(dObj.getMonth()+1).padStart(2,'0')}/${dObj.getFullYear()}`;
                         map.set(label, { dateStr: label, rate: rates[currentTargetCurrency], dateObj: dObj, isLive: true });
                         added++;
@@ -558,7 +769,7 @@ async function fetchAndMergeRange(start, end, map, signal) {
             console.warn(`API responded with status: ${response.status} for ${url}`);
         }
     } catch (err) {
-        if (err.name !== 'AbortError') console.error(`Fetch error for ${currentBaseCurrency}/${currentTargetCurrency}:`, err);
+        if (err && err.name !== 'AbortError') console.error(`Fetch error for ${currentBaseCurrency}/${currentTargetCurrency}:`, err);
     }
 }
 
@@ -576,7 +787,10 @@ async function backgroundDeepSync(map, key, signal) {
     for (let year of years) {
         if (signal && signal.aborted) return;
         
-        const count = Array.from(map.values()).filter(d => d.dateObj.getFullYear() === year).length;
+        const count = Array.from(map.values()).filter(d => {
+            const dObj = d.dateObj instanceof Date ? d.dateObj : new Date(d.dateObj);
+            return !isNaN(dObj.getTime()) && dObj.getFullYear() === year;
+        }).length;
 
         // Se mancano dati per quell'anno, scaricali
         if (count < 100) {
@@ -589,31 +803,29 @@ async function backgroundDeepSync(map, key, signal) {
             await fetchAndMergeRange(startY, fetchEnd, map, signal);
             if (signal && signal.aborted) return;
             
-            // Aggiorniamo la lista globale e la cache
             syncGlobalList(map);
             saveToCache(key, historicalRateList);
             
-            // Ogni 2 anni scaricati, rinfreschiamo la UI per mostrare progresso
             batchCount++;
             if (batchCount % 2 === 0) {
-                // Background sync only refreshes chart and simple table automatically
-                // Full database table is left to the user to avoid freezing
                 renderChart();
                 renderTable();
             }
             
-            await new Promise(r => setTimeout(r, 100)); // Non blocchiamo troppo a lungo
+            await new Promise(r => setTimeout(r, 100));
         }
     }
     
     if (signal && signal.aborted) return;
     
-    // Fine sincronizzazione: rinfreschiamo la UI finale
     syncGlobalList(map);
     saveToCache(key, historicalRateList);
     updateDashboardUI();
     
-    if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--success)"></i> ${getTranslation('sync_complete')}`;
+    if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle" style="color:var(--success)"></i> ${getTranslation('sync_complete')} (${historicalRateList.length} record)`;
+
+    // Ri-aggiorna il tasso live dopo il deep sync (backgroundDeepSync può sovrascrivere la UI)
+    fetchRealTimeLiveRate();
 }
 
 /**
@@ -622,6 +834,12 @@ async function backgroundDeepSync(map, key, signal) {
 function syncGlobalList(mapReference) {
     if (!mapReference) return;
     historicalRateList = Array.from(mapReference.values())
+        .filter(d => d && d.rate !== undefined && d.dateStr)
+        .map(d => ({
+            ...d,
+            // Ricostruisce dateObj SEMPRE da dateStr (DD/MM/YYYY) per evitare offset timezone
+            dateObj: APP_UTILS.parseDate(d.dateStr)
+        }))
         .filter(d => d.dateObj && !isNaN(d.dateObj.getTime()))
         .sort((a,b) => a.dateObj - b.dateObj);
 }
@@ -635,24 +853,25 @@ function saveAndRenderAll(map, key, fullRender = false) {
     }
 }
 
-
-
 function saveToCache(key, list) {
     if (!list || list.length === 0) return;
     try {
+        // Salva dateObj come YYYY-MM-DD per evitare problemi di fuso orario al ricarico
         const cleanData = list.map(item => ({
             dateStr: item.dateStr,
             rate: item.rate,
-            dateObj: item.dateObj instanceof Date ? item.dateObj.toISOString() : new Date(item.dateObj).toISOString(),
+            dateISO: item.dateObj instanceof Date
+                ? `${item.dateObj.getFullYear()}-${String(item.dateObj.getMonth()+1).padStart(2,'0')}-${String(item.dateObj.getDate()).padStart(2,'0')}`
+                : item.dateStr,
             isLive: item.isLive
         }));
         localStorage.setItem(key, JSON.stringify(cleanData));
-    } catch (err) { 
-        console.warn("Storage error", err);
+    } catch (err) {
+        console.warn('Storage error (localStorage pieno?)', err);
     }
 }
 
-// Tasto Reset Cache - No timeout needed if script is at end of body
+// Tasto Reset Cache
 document.addEventListener('DOMContentLoaded', () => {
     const resetBtn = document.getElementById('resetDataBtn');
     if (resetBtn) {
@@ -666,33 +885,64 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-
-
-// formatCurrency and parseDate moved to APP_UTILS
-
-// formatNumberWithSeparators replaced by APP_UTILS.formatNumber
-
 let historicalChartInstance = null;
 let activeChartFrame = '1m'; // Default to 1 Month
 
-// Setup Chart Filter Listeners
-const chartFilterBtns = document.querySelectorAll('.chart-filter-btn');
-if (chartFilterBtns.length > 0 && !chartFilterBtns[0].dataset.listenerAdded) {
-    chartFilterBtns.forEach(btn => {
-        btn.dataset.listenerAdded = 'true';
-        btn.addEventListener('click', (e) => {
-            chartFilterBtns.forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            activeChartFrame = e.target.getAttribute('data-range');
-            renderChart();
+function setupChartFilterListeners() {
+    const chartFilterBtns = document.querySelectorAll('.chart-filter-btn');
+    if (chartFilterBtns.length > 0) {
+        chartFilterBtns.forEach(btn => {
+            if (!btn.dataset.listenerAdded) {
+                btn.dataset.listenerAdded = 'true';
+                btn.addEventListener('click', async (e) => {
+                    chartFilterBtns.forEach(b => b.classList.remove('active'));
+                    const targetBtn = e.currentTarget || e.target;
+                    targetBtn.classList.add('active');
+                    activeChartFrame = targetBtn.getAttribute('data-range');
+                    
+                    await ensureRangeLoaded(activeChartFrame);
+                    renderChart();
+                });
+            }
         });
-    });
+    }
+}
+
+async function ensureRangeLoaded(range) {
+    if (historicalRateList.length === 0) return;
+    const now = new Date();
+    let targetStartDate = null;
+
+    if (range === '5y') {
+        targetStartDate = new Date(now); targetStartDate.setFullYear(targetStartDate.getFullYear() - 5);
+    } else if (range === '1y') {
+        targetStartDate = new Date(now); targetStartDate.setFullYear(targetStartDate.getFullYear() - 1);
+    } else if (range === '6m') {
+        targetStartDate = new Date(now); targetStartDate.setMonth(targetStartDate.getMonth() - 6);
+    } else if (range === '3m') {
+        targetStartDate = new Date(now); targetStartDate.setMonth(targetStartDate.getMonth() - 3);
+    } else if (range === 'all') {
+        targetStartDate = new Date(now); targetStartDate.setFullYear(targetStartDate.getFullYear() - 10);
+    }
+
+    if (targetStartDate) {
+        const oldestLoaded = historicalRateList[0].dateObj;
+        if (oldestLoaded > targetStartDate) {
+            const storageKey = `forex_api_data_${currentBaseCurrency}_${currentTargetCurrency}`;
+            const mapRef = new Map(historicalRateList.map(item => [item.dateStr, item]));
+            await fetchAndMergeRange(targetStartDate, now, mapRef, syncAbortController ? syncAbortController.signal : null);
+            syncGlobalList(mapRef);
+            saveToCache(storageKey, historicalRateList);
+        }
+    }
 }
 
 function renderChart() {
     const chartCanvas = document.getElementById('historicalChart');
     if (!chartCanvas) return;
     
+    setupChartFilterListeners();
+
     const ctx = chartCanvas.getContext('2d');
 
     if (historicalChartInstance) {
@@ -702,28 +952,27 @@ function renderChart() {
     let chartData = [...historicalRateList];
     if (chartData.length === 0) return;
 
-    // Applica filtro temporale grafico
+    const now = new Date();
+    // Applica filtro temporale grafico usando oggetti Date certi
     if (activeChartFrame === '5y') {
-        const cutoff = new Date(); cutoff.setFullYear(cutoff.getFullYear() - 5);
-        chartData = chartData.filter(d => d.dateObj >= cutoff);
+        const cutoff = new Date(now); cutoff.setFullYear(cutoff.getFullYear() - 5);
+        chartData = chartData.filter(d => (d.dateObj instanceof Date ? d.dateObj : new Date(d.dateObj)) >= cutoff);
     } else if (activeChartFrame === '1y') {
-        const cutoff = new Date(); cutoff.setFullYear(cutoff.getFullYear() - 1);
-        chartData = chartData.filter(d => d.dateObj >= cutoff);
+        const cutoff = new Date(now); cutoff.setFullYear(cutoff.getFullYear() - 1);
+        chartData = chartData.filter(d => (d.dateObj instanceof Date ? d.dateObj : new Date(d.dateObj)) >= cutoff);
     } else if (activeChartFrame === '6m') {
-        const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 6);
-        chartData = chartData.filter(d => d.dateObj >= cutoff);
+        const cutoff = new Date(now); cutoff.setMonth(cutoff.getMonth() - 6);
+        chartData = chartData.filter(d => (d.dateObj instanceof Date ? d.dateObj : new Date(d.dateObj)) >= cutoff);
     } else if (activeChartFrame === '3m') {
-        const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 3);
-        chartData = chartData.filter(d => d.dateObj >= cutoff);
+        const cutoff = new Date(now); cutoff.setMonth(cutoff.getMonth() - 3);
+        chartData = chartData.filter(d => (d.dateObj instanceof Date ? d.dateObj : new Date(d.dateObj)) >= cutoff);
     } else if (activeChartFrame === '1m') {
-        const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 1);
-        chartData = chartData.filter(d => d.dateObj >= cutoff);
+        const cutoff = new Date(now); cutoff.setMonth(cutoff.getMonth() - 1);
+        chartData = chartData.filter(d => (d.dateObj instanceof Date ? d.dateObj : new Date(d.dateObj)) >= cutoff);
     }
     
-    // Fallback: Se il filtro ha svuotato i dati (es. valute con dati vecchi come RUB) 
-    // ma abbiamo dati nello storico, mostriamo gli ultimi 30 record disponibili.
     if (chartData.length === 0 && historicalRateList.length > 0) {
-        chartData = [...historicalRateList].slice(-30);
+        chartData = [...historicalRateList];
     }
 
     const labels = chartData.map(d => d.dateStr); // Use daily date string rather than Month Label

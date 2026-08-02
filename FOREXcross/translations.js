@@ -82,6 +82,7 @@ const translations = {
         theme_dark: "Scuro",
         background_label: "Colore Sfondo",
         bg_option_default: "Predefinito",
+        bg_option_gray: "Grigio",
         bg_option_black: "Nero",
         real_time_label: "API Quotazioni Real-Time (Twelve Data)",
         twelve_data_key_placeholder: "Incolla la tua API Key qui...",
@@ -131,7 +132,10 @@ const translations = {
         btn_check_updates: "Controlla Aggiornamenti",
         update_no_new: "L'app è già all'ultima versione.",
         update_found: "Nuova versione trovata! Ricaricamento...",
-        back_to_hub: "TORNA ALL'HUB"
+        cache_section_title: "Memoria Cache",
+        cache_section_desc: "Risolvi i problemi di caricamento svuotando la memoria cache temporanea e i dati scaricati.",
+        btn_clear_cache: "Cancella Cache e Dati",
+        clear_cache_confirm: "Vuoi cancellare la cache locale e ricaricare l'applicazione?"
     },
     en: {
         homepage_title: "FOREX<br>Dashboard",
@@ -215,6 +219,7 @@ const translations = {
         theme_dark: "Dark",
         background_label: "Background Color",
         bg_option_default: "Default",
+        bg_option_gray: "Gray",
         bg_option_black: "Black",
         real_time_label: "Real-Time Rates API (Twelve Data)",
         twelve_data_key_placeholder: "Paste your API Key here...",
@@ -264,7 +269,10 @@ const translations = {
         btn_check_updates: "Check for Updates",
         update_no_new: "App is already up to date.",
         update_found: "New version found! Reloading...",
-        back_to_hub: "BACK TO HUB"
+        cache_section_title: "App Cache",
+        cache_section_desc: "Solve display or load issues by clearing the temporary cache and downloaded rates data.",
+        btn_clear_cache: "Clear Cache & Data",
+        clear_cache_confirm: "Do you want to clear the local cache and reload the application?"
     },
     fr: {
         homepage_title: "FOREX<br>Dashboard",
@@ -348,6 +356,7 @@ const translations = {
         theme_dark: "Sombre",
         background_label: "Couleur de Fond",
         bg_option_default: "Par défaut",
+        bg_option_gray: "Gris",
         bg_option_black: "Noir",
         real_time_label: "API Taux de Change Real-Time (Twelve Data)",
         twelve_data_key_placeholder: "Collez votre API Key ici...",
@@ -397,7 +406,10 @@ const translations = {
         btn_check_updates: "Vérifier les mises à jour",
         update_no_new: "L'application est déjà à jour.",
         update_found: "Nouvelle version trouvée ! Rechargement...",
-        back_to_hub: "RETOUR AU HUB"
+        cache_section_title: "Mémoire Cache",
+        cache_section_desc: "Résolvez les problèmes d'affichage en vidant le cache temporaire et les données téléchargées.",
+        btn_clear_cache: "Effacer le Cache et Données",
+        clear_cache_confirm: "Voulez-vous effacer le cache local et recharger l'application?"
     }
 };
 

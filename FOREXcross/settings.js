@@ -1,12 +1,12 @@
-// Initial Theme Check - Use documentElement because body might not be ready in head
+/**
+ * Settings and Theme Management
+ */
+
+// Initial Theme & BG Check - Use documentElement because body might not be ready in head
 (function() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('app_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
-    
-    const savedBg = localStorage.getItem('app_bg') || 'default';
-    if (savedBg !== 'default') {
-        document.documentElement.setAttribute('data-bg', savedBg);
-    }
+    localStorage.removeItem('app_bg'); // Clean up old background setting if exists
 })();
 
 // Global Admin State
@@ -18,12 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initSettings() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('app_theme') || 'dark';
     setTheme(savedTheme, false); // Initialize without saving again
-    
-    // Support legacy BG if still needed, but UI is removed
-    const savedBg = localStorage.getItem('app_bg') || 'default';
-    setBackground(savedBg, false);
 
     updateManualLinks();
     applyAdminUI(); // Initial Admin UI state
@@ -50,11 +46,8 @@ function initSettings() {
 
     // NEW: Listen for changes from other tabs or local changes
     window.addEventListener('storage', (e) => {
-        if (e.key === 'theme') {
+        if (e.key === 'app_theme') {
             setTheme(e.newValue, false);
-        }
-        if (e.key === 'app_bg') {
-            setBackground(e.newValue, false);
         }
         if (e.key === 'app_language') {
             updateManualLinks();
@@ -261,12 +254,13 @@ function togglePrivacy(show) {
 }
 
 function setTheme(theme, save = true) {
+    console.log("setTheme called with:", theme, "save:", save);
     document.documentElement.setAttribute('data-theme', theme);
     if (save) {
-        localStorage.setItem('theme', theme);
+        localStorage.setItem('app_theme', theme);
     }
     
-    // Update switch buttons UI if they exist (though mostly removed)
+    // Update switch buttons UI
     const btns = document.querySelectorAll('.theme-switch-btn');
     btns.forEach(btn => {
         if (btn.getAttribute('data-theme') === theme) {
@@ -280,27 +274,9 @@ function setTheme(theme, save = true) {
     window.dispatchEvent(new CustomEvent('themeChanged', { detail: theme }));
 }
 
-function setBackground(bg, save = true) {
-    if (bg === 'default') {
-        document.documentElement.removeAttribute('data-bg');
-    } else {
-        document.documentElement.setAttribute('data-bg', bg);
-    }
-    
-    if (save) {
-        localStorage.setItem('app_bg', bg);
-    }
-    
-    // Update switch buttons UI
-    const btns = document.querySelectorAll('.bg-switch-btn');
-    btns.forEach(btn => {
-        if (btn.getAttribute('data-bg') === bg) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-}
+// Bind to window to guarantee global access
+window.setTheme = setTheme;
+window.toggleSettings = toggleSettings;
 
 /**
  * ADMIN MODE LOGIC
@@ -493,3 +469,36 @@ async function checkForUpdates() {
         }
     }
 }
+
+/**
+ * Clear Service Worker cache and local exchange rate data
+ */
+async function clearAppCache() {
+    const confirmMsg = getTranslation('clear_cache_confirm') || "Vuoi cancellare la cache locale e ricaricare l'applicazione?";
+    if (confirm(confirmMsg)) {
+        // Clear all Cache Storage (PWA Assets)
+        if ('caches' in window) {
+            try {
+                const keys = await caches.keys();
+                for (const key of keys) {
+                    await caches.delete(key);
+                }
+                console.log("Service Worker Cache cleared.");
+            } catch (e) {
+                console.error("Failed to clear caches:", e);
+            }
+        }
+
+        // Clear only exchange rates and currencies keys from localStorage
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+            const key = localStorage.key(i);
+            if (key && (key.startsWith('forex_api_data_') || key.startsWith('frankfurter_currencies'))) {
+                localStorage.removeItem(key);
+            }
+        }
+        
+        console.log("Local Storage data cleared.");
+        window.location.reload();
+    }
+}
+

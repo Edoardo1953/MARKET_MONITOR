@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
 
     <!-- Custom CSS with versioning to force refresh -->
-    <link rel="stylesheet" href="style.css?v=4.8.1">
+    <link rel="stylesheet" href="style.css?v=4.9.0">
     
     <!-- Translations Logic -->
     <script src="translations.js?v=4.7.7"></script>
@@ -47,10 +47,26 @@
                     </div>
                 </div>
 
+                <!-- Custom Cross Search: standalone in the header row, between title and icons -->
+                <div class="custom-cross-header-pill">
+                    <a href="dashboard.html" class="btn-header-custom" data-i18n-title="title_nav_historical">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                        <span data-i18n="group_custom">Custom Cross Search</span>
+                    </a>
+                </div>
 
                 <div class="header-actions">
                     <div class="header-controls-container">
+                        <div class="lang-selector">
+                            <button class="lang-btn" onclick="setLanguage('en')" title="English"><span class="fi fi-gb"></span></button>
+                            <button class="lang-btn" onclick="setLanguage('fr')" title="Français"><span class="fi fi-fr"></span></button>
+                            <button class="lang-btn" onclick="setLanguage('it')" title="Italiano"><span class="fi fi-it"></span></button>
+                        </div>
                         <div class="secondary-actions">
+                            <button class="icon-btn privacy-btn-pc" onclick="togglePrivacy(true)" title="Privacy" data-i18n-title="privacy_title">
+                                <i class="fa-solid fa-key"></i>
+                                <span class="btn-text" data-i18n="privacy_title">Privacy</span>
+                            </button>
                             <button class="icon-btn settings-btn-pc" onclick="toggleSettings(true)" title="Strumenti" data-i18n-title="settings_title">
                                 <i class="fa-solid fa-gear"></i>
                                 <span class="btn-text" data-i18n="settings_title">Strumenti</span>
@@ -64,17 +80,9 @@
         <!-- Main Split Content -->
         <div class="split-content">
             <div class="split-left">
-                <!-- Navigation Row: Hub + Search -->
-                <div class="content-nav-row">
-                    <a href="../index.html" class="hub-back-full-btn">
-                        <i class="fa-solid fa-house-chimney"></i>
-                        <span data-i18n="back_to_hub">BACK TO HUB</span>
-                    </a>
-                    <a href="dashboard.html" class="btn-header-custom" data-i18n-title="title_nav_historical">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                        <span data-i18n="group_custom">Custom Cross Search</span>
-                    </a>
-                </div>
+                <!-- Mobile Navigation Area Removed from Homepage for cleaner flow -->
+
+                <!-- Mobile Only Custom Cross Button REMOVED (now in header) -->
                 
                 <!-- Base Currency Display -->
                 <section class="base-currency-section">
@@ -187,6 +195,17 @@
             </div>
             <div class="settings-body">
 
+                <div class="settings-group">
+                    <label class="settings-group-title" data-i18n="theme_label">Colore App</label>
+                    <div class="settings-row">
+                        <span data-i18n="theme_label">Tema</span>
+                        <div class="theme-switch-wrapper">
+                            <button class="theme-switch-btn" data-theme="light" onclick="setTheme('light')" data-i18n="theme_light">Chiaro</button>
+                            <button class="theme-switch-btn" data-theme="dark" onclick="setTheme('dark')" data-i18n="theme_dark">Scuro</button>
+                        </div>
+                    </div>
+                </div>
+
 
 
                 <div class="settings-group">
@@ -226,11 +245,73 @@
                     </div>
                 </div>
 
+                <div class="settings-group" style="padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <label class="settings-group-title" data-i18n="update_section_title">Aggiornamenti</label>
+                    <p class="settings-group-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Verifica se sono disponibili nuove versioni dell'app. (Versione v4.8.9)</p>
+                    <button id="btnCheckUpdates" class="action-btn-full" onclick="checkForUpdates()" style="width: 100%; background: var(--bg-card); color: var(--accent-primary); border: 2px solid var(--accent-primary); padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px;">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span data-i18n="btn_check_updates">Controlla Aggiornamenti</span>
+                    </button>
+                </div>
 
+                <div class="settings-group" style="padding-top: 15px; border-top: 1px solid var(--border-color);">
+                    <label class="settings-group-title" data-i18n="cache_section_title">Memoria Cache</label>
+                    <p class="settings-group-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;" data-i18n="cache_section_desc">Cancella la cache dei dati e ricarica l'applicazione per risolvere eventuali problemi di visualizzazione.</p>
+                    <button id="btnClearCache" class="action-btn-full" onclick="clearAppCache()" style="width: 100%; background: var(--bg-card); color: #ef4444; border: 2px solid #ef4444; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span data-i18n="btn_clear_cache">Svuota Cache App</span>
+                    </button>
+                </div>
 
             </div>
         </div>
     </div>
+
+    <!-- Privacy Overlay -->
+    <div id="privacyOverlay" class="settings-overlay hidden">
+        <div class="settings-container">
+            <div class="settings-header">
+                <h2 data-i18n="privacy_title">Privacy</h2>
+                <button class="close-settings" onclick="togglePrivacy(false)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="settings-body">
+                <div class="settings-group">
+                    <label class="settings-group-title" data-i18n="share_access_title">Condividi Accesso</label>
+                    <p class="settings-group-desc" data-i18n="share_access_desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Crea un link con password per fornire accesso temporaneo a terzi.</p>
+                    <div class="settings-col">
+                        <label style="font-size: 12px; margin-bottom: 4px; display: block;" data-i18n="access_password_label">Password Accesso</label>
+                        <input type="password" id="sharePassword" placeholder="••••••••" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
+                        
+                        <label style="font-size: 12px; margin-bottom: 4px; display: block;" data-i18n="access_expiry_label">Durata Accesso</label>
+                        <select id="shareExpiry" style="width: 100%; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 16px;">
+                            <option value="1" data-i18n="access_1month">1 Mese</option>
+                            <option value="3" data-i18n="access_3months">3 Mesi</option>
+                            <option value="6" data-i18n="access_6months">6 Mesi</option>
+                            <option value="12" data-i18n="access_1year">1 Anno</option>
+                        </select>
+
+                        <button class="action-btn-full" onclick="generateShareLink()" style="width: 100%; background: var(--accent-primary); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            <i class="fa-solid fa-link" style="margin-right: 8px;"></i>
+                            <span data-i18n="btn_generate_link">Genera Link</span>
+                        </button>
+                        <div id="shareLinkResult" class="hidden" style="margin-top: 12px;">
+                            <input type="text" id="shareLinkInput" readonly style="width: 100%; background: rgba(0,0,0,0.2); border: 1px dashed var(--accent-primary); color: var(--accent-primary); padding: 8px 10px; border-radius: 6px; font-size: 10px; margin-bottom: 8px;">
+                            <button onclick="copyShareLink()" style="background: none; border: none; color: var(--accent-primary); font-size: 12px; cursor: pointer; text-decoration: underline;" data-i18n="copy_link">Copia Link</button>
+                        </div>
+                    </div>
+                    <div class="settings-group" style="padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
+                    <label class="settings-group-title" data-i18n="admin_section_title">Configurazione</label>
+                    <div class="settings-row">
+                        <span data-i18n="admin_mode_label">Profilo</span>
+                        <div class="theme-switch-wrapper">
+                            <button class="admin-switch-btn" data-mode="user" onclick="setAdminMode('user')" data-i18n="admin_mode_user">USER</button>
+                            <button class="admin-switch-btn" data-mode="admin" onclick="setAdminMode('admin')" data-i18n="admin_mode_admin">ADMIN</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
     </div>
 
     <!-- Access Prompt Overlay -->
@@ -251,7 +332,7 @@
     </div>
 
     <!-- Intro Logic JS -->
-    <script src="intro.js?v=4.7.8"></script>
+    <script src="intro.js?v=4.8.0"></script>
 
     <!-- Register Service Worker -->
     <script>

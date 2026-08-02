@@ -105,7 +105,7 @@ async function fetchAllAvailableCurrencies() {
     }
 
     try {
-        const response = await fetch('https://api.frankfurter.app/currencies');
+        const response = await fetch('https://api.frankfurter.dev/v1/currencies');
         if (response.ok) {
             allAvailableCurrencies = await response.json();
             localStorage.setItem('frankfurter_currencies', JSON.stringify(allAvailableCurrencies));
@@ -119,6 +119,50 @@ async function fetchAllAvailableCurrencies() {
         }
     } catch (e) {
         console.warn("Could not fetch full currency list", e);
+    }
+
+    // FALLBACK if both local cache and API fetch failed (e.g. CORS / offline / file:// protocol)
+    if (!allAvailableCurrencies || Object.keys(allAvailableCurrencies).length === 0) {
+        allAvailableCurrencies = {
+            "EUR": "Euro",
+            "USD": "United States Dollar",
+            "BRL": "Brazilian Real",
+            "GBP": "British Pound",
+            "CAD": "Canadian Dollar",
+            "HKD": "Hong Kong Dollar",
+            "JPY": "Japanese Yen",
+            "CHF": "Swiss Franc",
+            "AUD": "Australian Dollar",
+            "CNY": "Chinese Renminbi Yuan",
+            "NZD": "New Zealand Dollar",
+            "SGD": "Singapore Dollar",
+            "SEK": "Swedish Krona",
+            "MXN": "Mexican Peso",
+            "INR": "Indian Rupee",
+            "ZAR": "South African Rand",
+            "KRW": "South Korean Won",
+            "TRY": "Turkish Lira",
+            "NOK": "Norwegian Krone",
+            "DKK": "Danish Krone",
+            "PLN": "Polish Złoty",
+            "HUF": "Hungarian Forint",
+            "CZK": "Czech Koruna",
+            "ILS": "Israeli New Shekel",
+            "PHP": "Philippine Peso",
+            "IDR": "Indonesian Rupiah",
+            "MYR": "Malaysian Ringgit",
+            "THB": "Thai Baht",
+            "BGN": "Bulgarian Lev",
+            "RON": "Romanian Leu",
+            "ISK": "Icelandic Króna"
+        };
+        
+        displayedCurrencies.forEach(curr => {
+            if (allAvailableCurrencies[curr.code]) {
+                curr.name = allAvailableCurrencies[curr.code];
+            }
+        });
+        renderCurrencyList();
     }
 }
 
@@ -183,7 +227,15 @@ async function fetchAndRenderRates() {
                         console.log(`Twelve Data Success for ${tdSymbol}: ${tdData.rate}`);
                         ratesCache[baseCurrency] = ratesCache[baseCurrency] || {};
                         ratesCache[baseCurrency][codesToFetch[0]] = parseFloat(tdData.rate);
-                        
+
+                        // ── Salva in localStorage per condivisione con Historical Rates ──
+                        const cacheKey = `realtime_rate_${baseCurrency}_${codesToFetch[0]}`;
+                        localStorage.setItem(cacheKey, JSON.stringify({
+                            rate: parseFloat(tdData.rate),
+                            ts: Date.now(),
+                            src: 'twelvedata'
+                        }));
+
                         // Aggiorna data nel sottotitolo e mostra badge Real-Time
                         const subtitleEl = document.querySelector('.header-subtitle');
                         const rtBadge = document.getElementById('realTimeBadge');
@@ -217,7 +269,21 @@ async function fetchAndRenderRates() {
             // Uniamo i dati di oggi con quelli real-time (se arrivati)
             const combinedRates = { ...data.rates, ...(ratesCache[baseCurrency] || {}) };
             ratesCache[baseCurrency] = combinedRates;
-            
+
+            // ── Salva ogni tasso in localStorage per condivisione con Historical Rates ──
+            Object.entries(combinedRates).forEach(([targetCode, rate]) => {
+                const cacheKey = `realtime_rate_${baseCurrency}_${targetCode}`;
+                // Salva solo se non c'è già un valore più recente da Twelve Data
+                const existing = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+                if (!existing || existing.src !== 'twelvedata') {
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        rate: rate,
+                        ts: Date.now(),
+                        src: 'open.er-api'
+                    }));
+                }
+            });
+
             // Se non abbiamo ancora aggiornato il sottotitolo (perché Twelve Data ha fallito o non era EUR/USD)
             const subtitleEl = document.querySelector('.header-subtitle');
             const rtBadge = document.getElementById('realTimeBadge');
@@ -322,9 +388,15 @@ function renderCurrencyList() {
         addBtn.innerHTML = `<i class="fa-solid fa-plus-circle"></i> ${getTranslation('search_add')}`;
         addBtn.addEventListener('click', () => {
             searchOverlay.classList.remove('hidden');
-            renderSearchResults(''); 
             searchResults.scrollTop = 0;
             setTimeout(() => searchInput.focus(), 100);
+            // Se le valute non sono ancora caricate, scaricale e poi mostra la lista
+            if (Object.keys(allAvailableCurrencies).length === 0) {
+                renderSearchResults('');
+                fetchAllAvailableCurrencies().then(() => renderSearchResults(searchInput ? searchInput.value.toUpperCase() : ''));
+            } else {
+                renderSearchResults('');
+            }
         });
         addPlaceholder.appendChild(addBtn);
     }
@@ -356,23 +428,31 @@ function setupSearchListeners() {
 
 function renderSearchResults(query = '') {
     searchResults.innerHTML = '';
-    searchResults.scrollTop = 0; // Alway reset scroll to top on new query
-    const filtered = Object.entries(allAvailableCurrencies).filter(([code, name]) => {
-        return code.includes(query) || name.toUpperCase().includes(query);
-    });
+    searchResults.scrollTop = 0;
 
+    // Controlla prima se le valute sono caricate
     if (Object.keys(allAvailableCurrencies).length === 0) {
         searchResults.innerHTML = `<li style="text-align:center; padding: 20px; color: var(--text-secondary); opacity: 0.7; font-size: 13px;">${getTranslation('loading_rates') || 'Caricamento divise...'}</li>`;
         return;
     }
 
-    filtered.forEach(([code, name]) => {
-        // Skip if already in list OR base currency
+    const filtered = Object.entries(allAvailableCurrencies).filter(([code, name]) => {
+        return code.includes(query) || name.toUpperCase().includes(query);
+    });
+
+    // Filtra valute già presenti o valuta base
+    const toShow = filtered.filter(([code]) => {
         const isAlreadyDisplayed = displayedCurrencies.some(c => c?.code?.trim()?.toUpperCase() === code?.trim()?.toUpperCase());
         const isBase = baseCurrency?.trim()?.toUpperCase() === code?.trim()?.toUpperCase();
-        
-        if (isAlreadyDisplayed || isBase) return;
+        return !isAlreadyDisplayed && !isBase;
+    });
 
+    if (toShow.length === 0) {
+        searchResults.innerHTML = `<li style="text-align:center; padding: 20px; color: var(--text-secondary); opacity: 0.7; font-size: 13px;">Nessun risultato${query ? ` per "${query}"` : ''}</li>`;
+        return;
+    }
+
+    toShow.forEach(([code, name]) => {
         const li = document.createElement('li');
         li.className = 'search-result-item';
         li.innerHTML = `

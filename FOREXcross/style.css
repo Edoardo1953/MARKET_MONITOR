@@ -251,16 +251,16 @@ body.admin-active .btn-delete-manual.admin-only {
 }
 
 [data-theme='dark'] {
-    --bg-main: #050505;          /* Deep Luxury Black */
-    --bg-sidebar: #0a0a0a;       /* Darker sidebar */
-    --bg-card: #121212;          /* Luxury Card black */
-    --bg-hover: #1e1e1e;         /* Muted hover */
+    --bg-main: #000000;          /* Pure Black Background */
+    --bg-sidebar: #18181b;       /* Dark Grey fields/sidebar */
+    --bg-card: #27272a;          /* Grey Cards/Fields */
+    --bg-hover: #3f3f46;         /* Muted hover */
     --text-primary: #f8fafc;     /* Off-white text */
-    --text-secondary: #94a3b8;   /* Muted slate text */
-    --text-muted: #64748b;       
+    --text-secondary: #cbd5e1;   /* Muted slate text */
+    --text-muted: #94a3b8;       
     --glass-bg: rgba(15, 23, 42, 0.8);
     --glass-border: rgba(255, 255, 255, 0.05);
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.08);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
@@ -271,16 +271,16 @@ body.admin-active .btn-delete-manual.admin-only {
 }
 
 [data-theme='light'] {
-    --bg-main: #f8fafc;          /* Light Slate background */
-    --bg-sidebar: #ffffff;       /* Pure white sidebar */
-    --bg-card: #ffffff;          /* White cards */
-    --bg-hover: #f1f5f9;         /* Subtle light hover */
-    --text-primary: #000000;     /* Pure Black for better contrast */
+    --bg-main: #e2e8f0;          /* Grey Background */
+    --bg-sidebar: #f1f5f9;       /* Light sidebar */
+    --bg-card: #ffffff;          /* White Cards/Fields */
+    --bg-hover: #cbd5e1;         /* Muted light hover */
+    --text-primary: #000000;     /* Pure Black text */
     --text-secondary: #475569;   /* Darker slate text */
     --text-muted: #64748b;       
     --glass-bg: rgba(255, 255, 255, 0.8);
     --glass-border: rgba(0, 0, 0, 0.05);
-    --border-color: rgba(0, 0, 0, 0.08);
+    --border-color: rgba(0, 0, 0, 0.12);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -310,14 +310,7 @@ body.admin-active .btn-delete-manual.admin-only {
     background-color: var(--border-color);
 }
 
-/* === BACKGROUND COLOR VARIATIONS === */
-[data-theme='dark'][data-bg='black'] {
-    --bg-main: #000000;
-    --bg-sidebar: #050505;
-    --bg-card: #0a0a0a;
-    --bg-hover: #151515;
-    --border-color: rgba(255, 255, 255, 0.05);
-}
+
 
 /* Apply transitions to background colors */
 body, .intro-app-container, .main-content, .intro-header, .numpad-section, .settings-container {
@@ -838,7 +831,7 @@ html, body {
 .title-with-icon-main {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 24px;
     margin-bottom: 5px;
 }
@@ -854,9 +847,9 @@ html, body {
 .header-text-container {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Aligned left as requested */
+    align-items: center; /* Centered titles */
     justify-content: center;
-    text-align: left; /* Aligned left as requested */
+    text-align: center; /* Centered titles */
 }
 
 .intro-titles.centered h1 {
@@ -869,13 +862,6 @@ html, body {
     letter-spacing: 0px; /* Reset for better vertical stacking */
     line-height: 0.9; /* Keeps words close together for the F-above-D effect */
     margin: 0;
-}
-
-[data-theme='light'] .intro-titles.centered h1 {
-    background: linear-gradient(135deg, #1e293b, #3b82f6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
 .header-subtitle {
@@ -901,27 +887,25 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 10px 18px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    color: var(--text-secondary);
+    gap: 12px;
+    padding: 12px 28px;
+    background: var(--accent-gradient);
+    color: white;
     text-decoration: none;
-    font-weight: 600;
+    border-radius: 50px;
+    font-weight: 700;
     font-size: 14px;
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    white-space: nowrap;
 }
 
 .btn-header-custom:hover {
-    border-color: var(--accent-primary);
-    color: var(--text-primary);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 25px rgba(59, 130, 246, 0.5);
 }
 
 .btn-header-custom i {
-    color: var(--accent-primary);
     font-size: 18px;
 }
 
@@ -1118,77 +1102,12 @@ margin: 0;
         gap: 5px;
     }
 
-    /* Row 1 Layout */
-    .intro-titles.centered {
-        flex: 1 1 auto !important;
-        min-width: 0 !important;
-    }
-    .header-actions {
-        flex: 0 0 auto !important;
-    }
-
-    /* Remove previous header-specific button logic */
-    .header-hub-action, .custom-cross-header-pill {
-        display: none !important;
-    }
-}
-
-/* === CONTENT NAVIGATION ROW (HUB + SEARCH) === */
-.content-nav-row {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 0 auto 30px;
-    width: 100%;
-    max-width: 800px;
-}
-
-/* Base button styles unified (PC and Tablet) */
-.hub-back-full-btn, .btn-header-custom {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    min-width: 180px;
-}
-
-.hub-back-full-btn i, .btn-header-custom i {
-    color: var(--accent-primary);
-    font-size: 18px;
-}
-
-.hub-back-full-btn:hover, .btn-header-custom:hover {
-    border-color: var(--accent-primary);
-    color: var(--text-primary);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
-}
-
-@media (max-width: 900px) {
-    .content-nav-row {
-        gap: 10px;
-        padding: 0 10px;
-        margin-bottom: 20px;
-    }
-    .hub-back-full-btn, .btn-header-custom {
-        flex: 1;
-        min-width: 0;
-        padding: 10px 8px;
-        font-size: 11px;
-        border-radius: 12px;
-    }
-    .hub-back-full-btn i, .btn-header-custom i {
-        font-size: 16px;
+    /* Ricerca Cross: wraps to its own full-width row below */
+    .custom-cross-header-pill {
+        order: 10;
+        flex: 0 0 100% !important;        /* Full width, forces line-wrap */
+        justify-content: center;
+        margin-top: 4px;
     }
 
     .intro-titles.centered h1 {
@@ -2516,7 +2435,7 @@ tbody tr:hover {
     justify-content: center !important;
     align-items: center !important;
     padding: 24px !important; /* Enlarged for PC/Tablet presence */
-    background: var(--bg-card) !important;
+    background: rgba(59, 130, 246, 0.08) !important;
     border: 2px dashed rgba(59, 130, 246, 0.7) !important;
     border-radius: 20px !important;
     margin: 0 !important;
@@ -2531,7 +2450,7 @@ tbody tr:hover {
 }
 
 .add-currency-btn:hover {
-    background: var(--bg-hover) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
     border-style: solid !important;
     transform: translateY(-2px);
 }
@@ -2598,23 +2517,22 @@ tbody tr:hover {
    =================================================== */
 #homeAddCurrencyArea {
     position: fixed;
-    bottom: 20px; /* Floating like a normal row */
-    left: 20px;
-    right: 20px;
+    bottom: 0;
+    left: 0;
+    right: 0;
     margin: 0 auto;
-    width: auto;
-    max-width: 600px; /* Same as .currency-row */
-    background: var(--bg-card); /* Same background as .currency-row */
-    border: 1px solid var(--border-color); /* Full border like .currency-row */
-    border-radius: var(--border-radius-md); /* Same curve as .currency-row */
-    padding: 10px 15px calc(env(safe-area-inset-bottom, 0px) + 10px) 15px;
+    width: 100%;
+    max-width: 750px;
+    background: var(--bg-main);
+    border-top: 2px solid var(--border-color);
+    padding: 15px 25px calc(env(safe-area-inset-bottom, 0px) + 20px) 25px;
     z-index: 9999;
     box-sizing: border-box;
     display: flex;
     flex-direction: row;      /* Search bar + Calc icon ALWAYS side by side */
     align-items: center;
-    gap: 15px;
-    box-shadow: var(--shadow-md); /* Gentle floating shadow */
+    gap: 20px;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
 }
 
 /* ===================================================
@@ -2706,23 +2624,22 @@ tbody tr:hover {
     /* Fixed Bottom Home Toolbar (Search + Calculator Toggle) */
     #homeAddCurrencyArea {
         position: fixed !important;
-        bottom: 20px !important; /* Float off the bottom edge */
-        left: 20px !important; /* Don't touch the sides */
-        right: 20px !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
         margin: 0 auto !important;
-        width: auto !important;
-        max-width: 600px !important; /* Perfect match with .currency-row */
-        background: var(--bg-card) !important;
-        border: 1px solid var(--border-color) !important; /* Full border */
-        border-radius: var(--border-radius-md) !important; /* Same roundness */
-        padding: 10px 15px calc(env(safe-area-inset-bottom, 5px) + 10px) 15px !important; 
+        width: 100% !important;
+        max-width: 750px !important; /* Perfect match with the wider 750px zones */
+        background: var(--bg-main) !important;
+        border-top: 2px solid var(--border-color);
+        padding: 15px 25px calc(env(safe-area-inset-bottom, 5px) + 20px) 25px !important; 
         z-index: 9999 !important; 
         box-sizing: border-box !important;
         display: flex !important;
         flex-direction: row !important; /* ALWAYS ROW */
         align-items: center !important;
-        gap: 15px !important; /* Tighter gap */
-        box-shadow: var(--shadow-md) !important; /* Floating shadow */
+        gap: 25px !important; /* More breathing room */
+        box-shadow: 0 -15px 45px rgba(0,0,0,0.6) !important;
         visibility: visible !important;
         opacity: 1 !important;
     }
@@ -3665,4 +3582,9 @@ tbody tr:hover {
 .no-scroll {
     overflow: hidden !important;
     height: 100vh !important;
-    }
+}
+
+/* Push Clear Cache button to the far right */
+#resetDataBtn {
+    margin-left: auto !important;
+}
