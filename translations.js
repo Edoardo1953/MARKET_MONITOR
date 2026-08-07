@@ -15,7 +15,9 @@ const translations = {
         mod_pwd: "Password Accesso",
         mod_duration: "Durata Accesso",
         mod_gen: "Genera Link",
-        mod_copy: "Copia Link"
+        mod_copy: "Copia Link",
+        back_to_hub: "Torna all'Hub",
+        title_nav_hub: "Torna al menu principale"
     },
     en: {
         hub_tagline: "Integrated Financial Data Ecosystem",
@@ -33,7 +35,9 @@ const translations = {
         mod_pwd: "Access Password",
         mod_duration: "Access Duration",
         mod_gen: "Generate Link",
-        mod_copy: "Copy Link"
+        mod_copy: "Copy Link",
+        back_to_hub: "Back to Hub",
+        title_nav_hub: "Back to main menu"
     },
     fr: {
         hub_tagline: "Écosystème Intégré de Données Financières",
@@ -51,7 +55,9 @@ const translations = {
         mod_pwd: "Mot de passe d'accès",
         mod_duration: "Durée d'accès",
         mod_gen: "Générer le lien",
-        mod_copy: "Copier le lien"
+        mod_copy: "Copier le lien",
+        back_to_hub: "Retour au Hub",
+        title_nav_hub: "Retour au menu principal"
     }
 };
 
