@@ -3595,16 +3595,25 @@ tbody tr:hover {
 
 /* Fix for Back to Hub button on mobile */
 @media (max-width: 768px) {
+    .header-inner {
+        position: relative !important;
+        padding-bottom: 40px !important;
+    }
     .header-hub-action {
+        position: absolute !important;
+        top: 95px !important; /* 10px top padding + 80px logo + 5px gap */
+        left: 33px !important; /* 15px left padding + 40px logo half - 22px button half */
+        margin: 0 !important;
         flex: 0 !important;
-        margin-right: 5px !important;
     }
     .back-btn span {
         display: none !important;
     }
     .back-btn {
-        padding: 10px !important;
+        padding: 0 !important;
         border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
         justify-content: center !important;
         width: 44px !important;
         height: 44px !important;
