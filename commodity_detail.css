@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --bg-page: #000000;
     --bg-card: rgba(18, 18, 18, 0.85);
     --accent-blue: #3b82f6; 
@@ -24,7 +24,7 @@ body {
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
-    padding: 0 20px 40px;
+    padding: 0 20px 100px;
 }
 
 /* Detail Header */
@@ -256,7 +256,7 @@ td {
     .detail-header { flex-direction: column; gap: 20px; align-items: flex-start; }
     .header-right { text-align: left; }
     .detail-price { font-size: 2rem; }
-    .page-container { padding: 0 15px 30px; }
+    .page-container { padding: 0 15px 90px; }
 }
 
 /* Light Mode Support */
@@ -285,4 +285,5 @@ td {
 [data-theme='light'] .section-card {
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
+
 
