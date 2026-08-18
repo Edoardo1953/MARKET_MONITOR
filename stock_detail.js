@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions (Stock Catalog)
     const stockCatalog = [
         // NASDAQ / NYSE
@@ -29,16 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
         { symbol: 'MC.PA', name: 'LVMH', exchange: 'Euronext Paris', price: 466.65, change: -1.25 },
         { symbol: 'TTE.PA', name: 'TotalEnergies', exchange: 'Euronext Paris', price: 76.00, change: 0.85 },
         { symbol: 'SAN.PA', name: 'Sanofi', exchange: 'Euronext Paris', price: 77.77, change: -0.15 },
-        { symbol: 'OR.PA', name: 'L\'Oréal', exchange: 'Euronext Paris', price: 348.40, change: -0.45 },
+        { symbol: 'OR.PA', name: 'L\'OrÃ©al', exchange: 'Euronext Paris', price: 348.40, change: -0.45 },
         { symbol: 'AIR.PA', name: 'Airbus', exchange: 'Euronext Paris', price: 160.92, change: 1.15 },
         { symbol: 'BNP.PA', name: 'BNP Paribas', exchange: 'Euronext Paris', price: 83.35, change: 1.12 },
 
-        // Deutsche Börse (DAX)
-        { symbol: 'SAP', name: 'SAP SE', exchange: 'Deutsche Börse', price: 174.20, change: 1.45 },
-        { symbol: 'SIE', name: 'Siemens AG', exchange: 'Deutsche Börse', price: 168.30, change: 0.85 },
-        { symbol: 'ALV', name: 'Allianz SE', exchange: 'Deutsche Börse', price: 254.12, change: 0.35 },
-        { symbol: 'DTE', name: 'Deutsche Telekom', exchange: 'Deutsche Börse', price: 22.15, change: -0.15 },
-        { symbol: 'MBG', name: 'Mercedes-Benz', exchange: 'Deutsche Börse', price: 72.45, change: 1.12 },
+        // Deutsche BÃ¶rse (DAX)
+        { symbol: 'SAP', name: 'SAP SE', exchange: 'Deutsche BÃ¶rse', price: 174.20, change: 1.45 },
+        { symbol: 'SIE', name: 'Siemens AG', exchange: 'Deutsche BÃ¶rse', price: 168.30, change: 0.85 },
+        { symbol: 'ALV', name: 'Allianz SE', exchange: 'Deutsche BÃ¶rse', price: 254.12, change: 0.35 },
+        { symbol: 'DTE', name: 'Deutsche Telekom', exchange: 'Deutsche BÃ¶rse', price: 22.15, change: -0.15 },
+        { symbol: 'MBG', name: 'Mercedes-Benz', exchange: 'Deutsche BÃ¶rse', price: 72.45, change: 1.12 },
 
         // London SE (FTSE)
         { symbol: 'SHEL', name: 'Shell', exchange: 'London SE', price: 26.45, change: 0.85 },
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // IBEX 35
         { symbol: 'SAN.MC', name: 'Banco Santander', exchange: 'Bolsa Madrid', price: 4.12, change: 1.24 },
         { symbol: 'IBE.MC', name: 'Iberdrola', exchange: 'Bolsa Madrid', price: 11.45, change: 0.45 },
-        { symbol: 'TEF.MC', name: 'Telefónica', exchange: 'Bolsa Madrid', price: 3.84, change: -0.15 },
+        { symbol: 'TEF.MC', name: 'TelefÃ³nica', exchange: 'Bolsa Madrid', price: 3.84, change: -0.15 },
         { symbol: 'ITX.MC', name: 'Inditex', exchange: 'Bolsa Madrid', price: 42.30, change: 1.12 },
 
         // Euronext Amsterdam (AEX)
@@ -80,10 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Currency mapping helper
     const getCurrency = (key) => {
         const mapping = {
-            'nyse': '$', 'nasdaq': '$', 'borit': '€', 'lse': '£', 
-            'dax': '€', 'cac': '€', 'tse': '¥', 'hkex': 'HK$', 
-            'tsx': 'C$', 'asx': 'A$', 'sse': '¥', 'six': 'CHF', 
-            'ibex': '€', 'eurnex': '€'
+            'nyse': '$', 'nasdaq': '$', 'borit': 'â‚¬', 'lse': 'Â£', 
+            'dax': 'â‚¬', 'cac': 'â‚¬', 'tse': 'Â¥', 'hkex': 'HK$', 
+            'tsx': 'C$', 'asx': 'A$', 'sse': 'Â¥', 'six': 'CHF', 
+            'ibex': 'â‚¬', 'eurnex': 'â‚¬'
         };
         return mapping[key] || '$';
     };
@@ -365,4 +365,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Attempt initial real-world load
     updateChartWithRealData('1m');
+    const refreshHistBtn = document.getElementById('refreshHistorical');
+    if (refreshHistBtn) {
+        refreshHistBtn.addEventListener('click', async () => {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const range = activeBtn ? activeBtn.getAttribute('data-range') : '1m';
+            const icon = refreshHistBtn.querySelector('i');
+            if(icon) icon.classList.add('fa-spin');
+            
+            const success = await updateChartWithRealData(range);
+            
+            if (!success) {
+                const newData = generateChartData(range);
+                stockChart.data.labels = newData.labels;
+                stockChart.data.datasets[0].data = newData.data;
+                stockChart.data.datasets[0].pointRadius = newData.pointRadii;
+                stockChart.update();
+            }
+            if(icon) setTimeout(() => icon.classList.remove('fa-spin'), 500);
+        });
+    }
 });

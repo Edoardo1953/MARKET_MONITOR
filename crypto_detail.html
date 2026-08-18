@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -51,30 +51,16 @@
         <section class="chart-section">
             <div class="section-card">
                 <div class="card-header">
-                    <h2>Andamento Storico</h2>
-                    <div class="chart-filters">
-                        <button class="filter-btn" data-range="5y">5Y</button>
-                        <button class="filter-btn" data-range="1y">1Y</button>
-                        <button class="filter-btn" data-range="6m">6M</button>
-                        <button class="filter-btn" data-range="3m">3M</button>
-                        <button class="filter-btn active" data-range="1m">1M</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="cryptoChart"></canvas>
-                </div>
-            </div>
-        </section>
-
-        <!-- Historical Data Section -->
-        <section class="data-section">
-            <div class="section-card">
-                <div class="card-header">
                     <h2 id="tableTitle">Dati Storici</h2>
-                    <button id="exportData" class="export-btn">
-                        <i class="fa-solid fa-file-export"></i>
-                        Esporta
-                    </button>
+                    <div class="action-buttons" style="display: flex; gap: 10px;">
+                        <button id="refreshHistorical" class="export-btn" title="Forza Aggiornamento">
+                            <i class="fa-solid fa-arrows-rotate"></i>
+                        </button>
+                        <button id="exportData" class="export-btn">
+                            <i class="fa-solid fa-file-export"></i>
+                            Esporta
+                        </button>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table id="historicalTable">
@@ -98,12 +84,13 @@
 
         <!-- Footer -->
         <footer class="hub-footer">
-            <p>© 2026 MARKET MONITOR - Specialized Crypto Hub</p>
+            <p>Â© 2026 MARKET MONITOR - Specialized Crypto Hub</p>
         </footer>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="crypto_detail.js"></script>
+    <script src="twelvedata_api.js"></script>`r`n    <script src="crypto_detail.js"></script>
 </body>
 </html>
+

@@ -1,21 +1,21 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions
     const exchangeCatalog = {
         'nyse': { name: 'NYSE', fullName: 'New York Stock Exchange', country: 'Stati Uniti', flag: 'fi fi-us', index: 'S&P 500', price: 6626.65, change: 1.07, basePrice: 6500, currency: '$' },
         'nasdaq': { name: 'NASDAQ', fullName: 'NASDAQ Stock Market', country: 'Stati Uniti', flag: 'fi fi-us', index: 'Nasdaq 100', price: 24042.23, change: 0.95, basePrice: 23500, currency: '$' },
-        'borit': { name: 'Borsa Italiana', fullName: 'Borsa Italiana S.p.A.', country: 'Italia', flag: 'fi fi-it', index: 'FTSE MIB', price: 43369.53, change: 0.42, basePrice: 42000, currency: '€' },
-        'lse': { name: 'London SE', fullName: 'London Stock Exchange', country: 'Regno Unito', flag: 'fi fi-gb', index: 'FTSE 100', price: 10075.76, change: 1.05, basePrice: 9800, currency: '£' },
-        'dax': { name: 'Deutsche Börse', fullName: 'Frankfurt Stock Exchange', country: 'Germania', flag: 'fi fi-de', index: 'DAX 40', price: 22960.37, change: 1.43, basePrice: 22000, currency: '€' },
-        'cac': { name: 'Euronext Paris', fullName: 'Euronext Paris (CAC)', country: 'Francia', flag: 'fi fi-fr', index: 'CAC 40', price: 7858.02, change: 1.47, basePrice: 7700, currency: '€' },
-        'tse': { name: 'Tokyo SE', fullName: 'Tokyo Stock Exchange', country: 'Giappone', flag: 'fi fi-jp', index: 'Nikkei 225', price: 53749.62, change: 1.45, basePrice: 50000, currency: '¥' },
+        'borit': { name: 'Borsa Italiana', fullName: 'Borsa Italiana S.p.A.', country: 'Italia', flag: 'fi fi-it', index: 'FTSE MIB', price: 43369.53, change: 0.42, basePrice: 42000, currency: 'â‚¬' },
+        'lse': { name: 'London SE', fullName: 'London Stock Exchange', country: 'Regno Unito', flag: 'fi fi-gb', index: 'FTSE 100', price: 10075.76, change: 1.05, basePrice: 9800, currency: 'Â£' },
+        'dax': { name: 'Deutsche BÃ¶rse', fullName: 'Frankfurt Stock Exchange', country: 'Germania', flag: 'fi fi-de', index: 'DAX 40', price: 22960.37, change: 1.43, basePrice: 22000, currency: 'â‚¬' },
+        'cac': { name: 'Euronext Paris', fullName: 'Euronext Paris (CAC)', country: 'Francia', flag: 'fi fi-fr', index: 'CAC 40', price: 7858.02, change: 1.47, basePrice: 7700, currency: 'â‚¬' },
+        'tse': { name: 'Tokyo SE', fullName: 'Tokyo Stock Exchange', country: 'Giappone', flag: 'fi fi-jp', index: 'Nikkei 225', price: 53749.62, change: 1.45, basePrice: 50000, currency: 'Â¥' },
         'hkex': { name: 'HKEX', fullName: 'Hong Kong Exchanges', country: 'Hong Kong', flag: 'fi fi-hk', index: 'Hang Seng', price: 25335.95, change: 0.75, basePrice: 24000, currency: 'HK$' },
-        'bovespa': { name: 'B3 Bovespa', fullName: 'Brasil Bolsa Balcão', country: 'Brasile', flag: 'fi fi-br', index: 'Ibovespa', price: 184493.48, change: 0.35, basePrice: 180000, currency: 'R$' },
+        'bovespa': { name: 'B3 Bovespa', fullName: 'Brasil Bolsa BalcÃ£o', country: 'Brasile', flag: 'fi fi-br', index: 'Ibovespa', price: 184493.48, change: 0.35, basePrice: 180000, currency: 'R$' },
         'tsx': { name: 'Toronto SE', fullName: 'Toronto Stock Exchange', country: 'Canada', flag: 'fi fi-ca', index: 'S&P/TSX', price: 25850.40, change: 0.22, basePrice: 25000, currency: 'C$' },
         'asx': { name: 'ASX', fullName: 'Australian Securities Exchange', country: 'Australia', flag: 'fi fi-au', index: 'S&P/ASX 200', price: 8450.12, change: 0.55, basePrice: 8200, currency: 'A$' },
-        'sse': { name: 'Shanghai SE', fullName: 'Shanghai Stock Exchange', country: 'Cina', flag: 'fi fi-cn', index: 'SSE Composite', price: 3450.60, change: -0.45, basePrice: 3400, currency: '¥' },
+        'sse': { name: 'Shanghai SE', fullName: 'Shanghai Stock Exchange', country: 'Cina', flag: 'fi fi-cn', index: 'SSE Composite', price: 3450.60, change: -0.45, basePrice: 3400, currency: 'Â¥' },
         'six': { name: 'SIX Swiss', fullName: 'SIX Swiss Exchange', country: 'Svizzera', flag: 'fi fi-ch', index: 'SMI', price: 12450.80, change: 0.35, basePrice: 12000, currency: 'CHF' },
-        'ibex': { name: 'Bolsa Madrid', fullName: 'Bolsa de Madrid (IBEX)', country: 'Spagna', flag: 'fi fi-es', index: 'IBEX 35', price: 17169.90, change: 1.54, basePrice: 16500, currency: '€' },
-        'eurnex': { name: 'Euronext AMS', fullName: 'Euronext Amsterdam', country: 'Paesi Bassi', flag: 'fi fi-nl', index: 'AEX', price: 945.45, change: 0.85, basePrice: 900, currency: '€' }
+        'ibex': { name: 'Bolsa Madrid', fullName: 'Bolsa de Madrid (IBEX)', country: 'Spagna', flag: 'fi fi-es', index: 'IBEX 35', price: 17169.90, change: 1.54, basePrice: 16500, currency: 'â‚¬' },
+        'eurnex': { name: 'Euronext AMS', fullName: 'Euronext Amsterdam', country: 'Paesi Bassi', flag: 'fi fi-nl', index: 'AEX', price: 945.45, change: 0.85, basePrice: 900, currency: 'â‚¬' }
     };
 
     const stockConstituents = {
@@ -50,9 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             { symbol: 'MC.PA', name: 'LVMH', price: 466.65, change: -1.25 },
             { symbol: 'TTE.PA', name: 'TotalEnergies', price: 76.00, change: 0.85 },
             { symbol: 'SAN.PA', name: 'Sanofi', price: 77.77, change: -0.15 },
-            { symbol: 'OR.PA', name: 'L\'Oréal', price: 348.40, change: -0.45 },
+            { symbol: 'OR.PA', name: 'L\'OrÃ©al', price: 348.40, change: -0.45 },
             { symbol: 'AIR.PA', name: 'Airbus', price: 160.92, change: 1.15 },
-            { symbol: 'RMS.PA', name: 'Hermès', price: 1649.50, change: -2.10 }
+            { symbol: 'RMS.PA', name: 'HermÃ¨s', price: 1649.50, change: -2.10 }
         ],
         'dax': [
             { symbol: 'SAP', name: 'SAP SE', price: 174.20, change: 1.45 },
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'ibex': [
             { symbol: 'SAN.MC', name: 'Banco Santander', price: 4.12, change: 1.24 },
             { symbol: 'IBE.MC', name: 'Iberdrola', price: 11.45, change: 0.45 },
-            { symbol: 'TEF.MC', name: 'Telefónica', price: 3.84, change: -0.15 },
+            { symbol: 'TEF.MC', name: 'TelefÃ³nica', price: 3.84, change: -0.15 },
             { symbol: 'ITX.MC', name: 'Inditex', price: 42.30, change: 1.12 }
         ],
         'eurnex': [
@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon.classList.remove('fa-spin');
                 }, 800);
             } else {
-                // Se abbiamo dati reali, l'update è già stato fatto dall'API (o manteniamo il dato precedente)
+                // Se abbiamo dati reali, l'update Ã¨ giÃ  stato fatto dall'API (o manteniamo il dato precedente)
                 icon.classList.remove('fa-spin');
                 if (!chartSuccess && hasRealHistoryData) {
                     console.log("Mantenimento grafico reale precedente causa limite API");
@@ -479,4 +479,22 @@ document.addEventListener('DOMContentLoaded', () => {
     renderStocks();
     updateConstituentsFromAPI().then(s => hasRealPriceData = s);
     updateChartFromAPI('1m').then(s => hasRealHistoryData = s);
+    const refreshHistBtn = document.getElementById('refreshHistorical');
+    if (refreshHistBtn) {
+        refreshHistBtn.addEventListener('click', () => {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const range = activeBtn ? activeBtn.getAttribute('data-range') : '1m';
+            const icon = refreshHistBtn.querySelector('i');
+            if(icon) icon.classList.add('fa-spin');
+            
+            setTimeout(() => {
+                const newData = generateChartData(range);
+                exchangeChart.data.labels = newData.labels;
+                exchangeChart.data.datasets[0].data = newData.data;
+                exchangeChart.data.datasets[0].pointRadius = newData.pointRadii;
+                exchangeChart.update();
+                if(icon) icon.classList.remove('fa-spin');
+            }, 800);
+        });
+    }
 });

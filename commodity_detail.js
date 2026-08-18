@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions (Shared with commodities.js)
     const commodityGroups = {
         'Metalli': 'Mercato Prezzi Metalli (London Metal Exchange / COMEX)',
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { name: 'Grano (Wheat)', symbol: 'ZW', price: 542.15, change: -1.42, category: 'Agricoltura' },
         { name: 'Mais (Corn)', symbol: 'ZC', price: 432.50, change: -0.85, category: 'Agricoltura' },
         { name: 'Semi di Soia', symbol: 'ZS', price: 1185.75, change: 0.25, category: 'Agricoltura' },
-        { name: 'Caffè Arabica', symbol: 'KC', price: 185.30, change: 0.65, category: 'Agricoltura' },
+        { name: 'CaffÃ¨ Arabica', symbol: 'KC', price: 185.30, change: 0.65, category: 'Agricoltura' },
         { name: 'Zucchero #11', symbol: 'SB', price: 21.82, change: -2.10, category: 'Agricoltura' },
         { name: 'Cotone', symbol: 'CT', price: 92.45, change: 1.15, category: 'Agricoltura' },
         { name: 'Cacao', symbol: 'CC', price: 8450.00, change: 4.52, category: 'Agricoltura' },
@@ -62,209 +62,204 @@ document.addEventListener('DOMContentLoaded', () => {
     changeEl.textContent = `${commodity.change >= 0 ? '+' : ''}${commodity.change.toFixed(2)}%`;
     changeEl.className = `detail-change ${commodity.change >= 0 ? 'positive' : 'negative'}`;
 
-    // 4. Historical Data Generation (Main logic to provide consistent table/chart)
+        // --- NEW ASYNC HISTORICAL DATA LOGIC ---
+    let historicalCache = {};
     const tableBody = document.getElementById('tableBody');
     const tableTitle = document.getElementById('tableTitle');
-
-    // Store base data to reuse across ranges
-    let annualRecords = [];
-    const yearsBase = [2026, 2025, 2024, 2023, 2022];
+    const chartCanvas = document.getElementById('commodityChart');
+    if (!chartCanvas) return;
+    const ctx = chartCanvas.getContext('2d');
     
-    yearsBase.forEach((year, index) => {
-        let basePrice;
-        if (commodity.symbol === 'BRENT') {
-            const brentTrend = { 2026: 86.15, 2025: 82.20, 2024: 78.45, 2023: 94.10, 2022: 50.02 };
-            basePrice = brentTrend[year] || commodity.price;
-        } else {
-            basePrice = commodity.price * (1 - (index * 0.08 * (Math.random() > 0.5 ? 1 : -0.5)));
+    let chartInstance = null;
+
+    async function fetchAndRenderData(range, forceRefresh = false) {
+        if (!forceRefresh && historicalCache[range]) {
+            renderData(range, historicalCache[range]);
+            return;
+        }
+
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> Caricamento dati...</td></tr>';
         }
         
-        const open = basePrice * (0.95 + Math.random() * 0.1);
-        const close = basePrice;
-        const low = Math.min(open, close) * (0.9 + Math.random() * 0.05);
-        const high = Math.max(open, close) * (1.05 + Math.random() * 0.05);
-        const varPct = (((close - open) / open) * 100).toFixed(2);
-        
-        annualRecords.push({ period: String(year), open, close, low, high, varPct });
-    });
-
-    function updateTable(range) {
-        tableBody.innerHTML = '';
-        let records = [];
+        let interval = "1day";
+        let outputsize = 30;
         
         switch(range) {
-            case '5y':
-                tableTitle.textContent = "Dati Storici (Ultimi 5 Anni)";
-                records = annualRecords; // Already generated in reverse order: 2026 -> 2022
-                break;
-            case '1y':
-                tableTitle.textContent = "Dati Storici (Ultimo Anno per Mese)";
-                const m1y = ['Apr 25', 'Mag 25', 'Giu 25', 'Lug 25', 'Ago 25', 'Set 25', 'Ott 25', 'Nov 25', 'Dic 25', 'Gen 26', 'Feb 26', 'Mar 26'];
-                m1y.forEach((m, i) => {
-                    const priceMid = commodity.price * (0.85 + (i * 0.012)); 
-                    records.push(mockRecord(m, priceMid));
-                });
-                records.reverse(); // Now 2026 is at index 0
-                break;
-            case '6m':
-                tableTitle.textContent = "Dati Storici (Ultimi 6 Mesi)";
-                const m6m = ['Ott 25', 'Nov 25', 'Dic 25', 'Gen 26', 'Feb 26', 'Mar 26'];
-                m6m.forEach((m, i) => {
-                   const priceMid = commodity.price * (0.92 + (i * 0.013));
-                   records.push(mockRecord(m, priceMid));
-                });
-                records.reverse();
-                break;
-            case '3m':
-                tableTitle.textContent = "Dati Storici (Ultimo Trimestre)";
-                const m3m = ['Gen 26', 'Feb 26', 'Mar 26'];
-                m3m.forEach((m, i) => {
-                    const priceMid = commodity.price * (0.96 + (i * 0.014));
-                    records.push(mockRecord(m, priceMid));
-                });
-                records.reverse();
-                break;
-            case '1m':
-                tableTitle.textContent = "Dati Storici (Mensile per Settimana)";
-                for (let i = 0; i < 4; i++) {
-                    const priceMid = commodity.price * (0.97 + (i * 0.007));
-                    records.push(mockRecord(`Mar 26 (W${i+1})`, priceMid));
-                }
-                records.reverse();
-                break;
+            case '1m': interval = "1day"; outputsize = 30; if(tableTitle) tableTitle.textContent = "Dati Storici (Ultimo Mese)"; break;
+            case '3m': interval = "1day"; outputsize = 90; if(tableTitle) tableTitle.textContent = "Dati Storici (Ultimo Trimestre)"; break;
+            case '6m': interval = "1week"; outputsize = 26; if(tableTitle) tableTitle.textContent = "Dati Storici (Ultimi 6 Mesi)"; break;
+            case '1y': interval = "1week"; outputsize = 52; if(tableTitle) tableTitle.textContent = "Dati Storici (Ultimo Anno)"; break;
+            case '5y': interval = "1month"; outputsize = 60; if(tableTitle) tableTitle.textContent = "Dati Storici (Ultimi 5 Anni)"; break;
         }
 
-        records.forEach(rec => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${rec.period}</td>
-                <td>$${rec.close.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                <td>$${rec.open.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                <td class="${rec.varPct >= 0 ? 'price-up' : 'price-down'}">${rec.varPct >= 0 ? '+' : ''}${rec.varPct}%</td>
-                <td>$${rec.low.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                <td>$${rec.high.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-            `;
-            tableBody.appendChild(row);
-        });
+        let apiData = null;
+        if (typeof TwelveDataAPI !== 'undefined') {
+            const apiKey = TwelveDataAPI.getApiKey();
+            if (apiKey) {
+                let sym = typeof commodity !== 'undefined' ? commodity.symbol : "";
+                if (['WTI', 'BRENT', 'NG', 'HG', 'PL', 'PA'].includes(sym)) {
+                    sym += '/USD';
+                } else {
+                    sym = TwelveDataAPI.mapSymbol(sym);
+                }
+                apiData = await TwelveDataAPI.getTimeSeries(sym, interval, outputsize);
+            }
+        }
 
-        return records;
+        if (!apiData || apiData.length === 0) {
+            apiData = generateFallbackData(range);
+        } else {
+            apiData = apiData.map(d => {
+                const o = d.open;
+                const c = d.close;
+                const h = d.high;
+                const l = d.low;
+                const v = (((c - o) / o) * 100).toFixed(2);
+                return { period: d.datetime.split(' ')[0], open: o, close: c, low: l, high: h, varPct: v };
+            });
+            apiData.reverse(); 
+        }
+
+        historicalCache[range] = apiData;
+        renderData(range, apiData);
     }
 
-    function mockRecord(label, base) {
-        const o = base * (0.98 + Math.random() * 0.04);
-        const c = base;
-        const l = Math.min(o, c) * 0.98;
-        const h = Math.max(o, c) * 1.02;
-        const v = (((c - o) / o) * 100).toFixed(2);
-        return { period: label, open: o, close: c, low: l, high: h, varPct: v };
-    }
-
-    // 5. Chart.js & Main Logic
-    const ctx = document.getElementById('commodityChart').getContext('2d');
-    
-    function generateChartData(range) {
-        const tableRecords = updateTable(range);
-        const labels = [];
+    function generateFallbackData(range) {
         const data = [];
-        const pointRadii = [];
+        const now = new Date();
+        let count = 30;
+        let stepDays = 1;
         
-        // Reverse table records to get chronological order (past to present)
-        const periods = [...tableRecords].reverse();
-        
-        periods.forEach((rec, idx) => {
-            if (idx > 0) {
-                // Number of filler points representing weekly intervals
-                let fillersCount = 4; // Default to weekly for most ranges
-                if (range === '1m') fillersCount = 2; 
-                if (range === '5y') fillersCount = 1; // Direct jump or single mid-point for yearly
+        switch(range) {
+            case '1m': count = 30; stepDays = 1; break;
+            case '3m': count = 90; stepDays = 1; break;
+            case '6m': count = 26; stepDays = 7; break;
+            case '1y': count = 52; stepDays = 7; break;
+            case '5y': count = 60; stepDays = 30; break;
+        }
 
-                const prevPrice = periods[idx-1].close;
-                const currPrice = rec.close;
-                
-                for (let i = 1; i < fillersCount; i++) {
-                    const ratio = i / fillersCount;
-                    // Lower noise for weekly view
-                    const noise = (Math.random() - 0.5) * (commodity.price * 0.012);
-                    labels.push(""); 
-                    data.push(prevPrice + (currPrice - prevPrice) * ratio + noise);
-                    pointRadii.push(3); // Small but visible blue point for weekly data
-                }
-            }
+        let currentPrice = typeof commodity !== 'undefined' ? commodity.price : 100;
+
+        for (let i = 0; i < count; i++) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - (i * stepDays));
+            const dateStr = d.toISOString().split('T')[0];
             
-            // Add the real period point
-            labels.push(rec.period);
-            data.push(rec.close);
-            pointRadii.push(7); // Highlighted larger point for the period
-        });
-
-        return { labels, data, pointRadii };
+            const o = currentPrice * (0.98 + Math.random() * 0.04);
+            const c = currentPrice;
+            const l = Math.min(o, c) * 0.98;
+            const h = Math.max(o, c) * 1.02;
+            const v = (((c - o) / o) * 100).toFixed(2);
+            
+            data.push({ period: dateStr, open: o, close: c, low: l, high: h, varPct: v });
+            currentPrice = currentPrice * (1 + (Math.random() - 0.5) * 0.02);
+        }
+        return data; 
     }
 
-    const initialData = generateChartData('1m');
-
-    const chartConfig = {
-        type: 'line',
-        data: {
-            labels: initialData.labels,
-            datasets: [{
-                label: commodity.name,
-                data: initialData.data,
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                borderWidth: 3,
-                tension: 0.35,
-                fill: true,
-                pointRadius: initialData.pointRadii,
-                pointBackgroundColor: '#3b82f6', // All points blue filled
-                pointBorderColor: '#fff',
-                pointBorderWidth: 1.5,
-                pointHoverRadius: 9
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => `Prezzo: $${context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2})}`
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { 
-                        color: '#94a3b8',
-                        callback: (value) => '$' + value.toLocaleString()
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
-                }
-            }
+    function renderData(range, records) {
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            records.forEach(rec => {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td>' + rec.period + '</td>' +
+                    '<td>$' + rec.close.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td>$' + rec.open.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td class="' + (rec.varPct >= 0 ? 'price-up' : 'price-down') + '">' + (rec.varPct >= 0 ? '+' : '') + rec.varPct + '%</td>' +
+                    '<td>$' + rec.low.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td>$' + rec.high.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>';
+                tableBody.appendChild(row);
+            });
         }
-    };
 
-    let commodityChart = new Chart(ctx, chartConfig);
+        const periods = [...records].reverse();
+        const labels = periods.map(r => r.period);
+        const data = periods.map(r => r.close);
+        const pointRadii = periods.map(() => 4);
+        
+        let labelName = typeof commodity !== 'undefined' ? commodity.name : "Asset";
 
-    // Filter Buttons
+        if (chartInstance) {
+            chartInstance.data.labels = labels;
+            chartInstance.data.datasets[0].data = data;
+            chartInstance.data.datasets[0].pointRadius = pointRadii;
+            chartInstance.update();
+        } else {
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelName,
+                        data: data,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.1,
+                        fill: true,
+                        pointRadius: pointRadii,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1.5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => 'Prezzo: $' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2})
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: (value) => '$' + value.toLocaleString()
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            };
+            chartInstance = new Chart(ctx, chartConfig);
+        }
+    }
+
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', (e) => {
             const range = e.target.getAttribute('data-range');
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
-            
-            const newData = generateChartData(range);
-            commodityChart.data.labels = newData.labels;
-            commodityChart.data.datasets[0].data = newData.data;
-            commodityChart.data.datasets[0].pointRadius = newData.pointRadii; // Assign updated radii
-            commodityChart.update();
+            fetchAndRenderData(range);
         });
     });
 
+    const refreshBtn = document.getElementById('refreshHistorical');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const range = activeBtn ? activeBtn.getAttribute('data-range') : '1m';
+            const icon = refreshBtn.querySelector('i');
+            if(icon) icon.classList.add('fa-spin');
+            fetchAndRenderData(range, true).then(() => {
+                if(icon) setTimeout(() => icon.classList.remove('fa-spin'), 500);
+            });
+        });
+    }
+
+    fetchAndRenderData('1m');
     // 6. Export Action
     document.getElementById('exportData').addEventListener('click', () => {
         const btn = document.getElementById('exportData');
@@ -277,3 +272,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1500);
     });
 });
+
