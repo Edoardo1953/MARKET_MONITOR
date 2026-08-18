@@ -97,7 +97,180 @@
             apiData.reverse(); 
         }
 
-        historicalCache[range] = apiData;
+                historicalCache[range] = apiData;
+        
+        // UPDATE MAIN HEADER PRICE WITH REAL LATEST DATA
+        if (apiData && apiData.length > 0) {
+            const latest = apiData[0]; // because we reversed it, 0 is the newest
+            const priceEl = document.getElementById('latestPrice');
+            const changeEl = document.getElementById('priceChange');
+            if (priceEl) {
+                priceEl.textContent = '
+    }
+
+        function generateFallbackData(range) {
+        const data = [];
+        const now = new Date();
+        let count = 30;
+        let stepDays = 1;
+        
+        switch(range) {
+            case '1m': count = 30; stepDays = 1; break;
+            case '3m': count = 90; stepDays = 1; break;
+            case '6m': count = 26; stepDays = 7; break;
+            case '1y': count = 52; stepDays = 7; break;
+            case '5y': count = 60; stepDays = 30; break;
+        }
+
+        let basePrice = typeof cryptoItem !== 'undefined' ? cryptoItem.price : 10000;
+        let currentPrice = basePrice;
+
+        for (let i = 0; i < count; i++) {
+            const d = new Date(now);
+            d.setDate(d.getDate() - (i * stepDays));
+            const dateStr = d.toISOString().split('T')[0];
+            
+            // Deterministic "randomness" using sine wave and index
+            let pseudoRandom = Math.abs(Math.sin(i * 12.9898 + basePrice)) * 0.04;
+            let direction = Math.sin(i * 78.233 + basePrice) > 0 ? 1 : -1;
+            
+            const o = currentPrice * (0.98 + pseudoRandom);
+            const c = currentPrice;
+            const l = Math.min(o, c) * 0.98;
+            const h = Math.max(o, c) * 1.02;
+            const v = (((c - o) / o) * 100).toFixed(2);
+            
+            data.push({ period: dateStr, open: o, close: c, low: l, high: h, varPct: v });
+            currentPrice = currentPrice * (1 + direction * (pseudoRandom * 0.5));
+        }
+        return data; 
+    }
+
+    function renderData(range, records) {
+        if (tableBody) {
+            tableBody.innerHTML = '';
+            records.forEach(rec => {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td>' + rec.period + '</td>' +
+                    '<td>$' + rec.close.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td>$' + rec.open.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td class="' + (rec.varPct >= 0 ? 'price-up' : 'price-down') + '">' + (rec.varPct >= 0 ? '+' : '') + rec.varPct + '%</td>' +
+                    '<td>$' + rec.low.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                    '<td>$' + rec.high.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>';
+                tableBody.appendChild(row);
+            });
+        }
+
+        const periods = [...records].reverse();
+        const labels = periods.map(r => r.period);
+        const data = periods.map(r => r.close);
+        const pointRadii = periods.map(() => 4);
+        
+        let labelName = typeof cryptoItem !== 'undefined' ? cryptoItem.name : "Asset";
+
+        if (chartInstance) {
+            chartInstance.data.labels = labels;
+            chartInstance.data.datasets[0].data = data;
+            chartInstance.data.datasets[0].pointRadius = pointRadii;
+            chartInstance.update();
+        } else {
+            const chartConfig = {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: labelName,
+                        data: data,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.1,
+                        fill: true,
+                        pointRadius: pointRadii,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1.5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => 'Prezzo: $' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2})
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { 
+                                color: '#94a3b8',
+                                callback: (value) => '$' + value.toLocaleString()
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    }
+                }
+            };
+            chartInstance = new Chart(ctx, chartConfig);
+        }
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', (e) => {
+            const range = e.target.getAttribute('data-range');
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            fetchAndRenderData(range);
+        });
+    });
+
+    const refreshBtn = document.getElementById('refreshHistorical');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            const activeBtn = document.querySelector('.filter-btn.active');
+            const range = activeBtn ? activeBtn.getAttribute('data-range') : '1m';
+            const icon = refreshBtn.querySelector('i');
+            if(icon) icon.classList.add('fa-spin');
+            fetchAndRenderData(range, true).then(() => {
+                if(icon) setTimeout(() => icon.classList.remove('fa-spin'), 500);
+            });
+        });
+    }
+
+    fetchAndRenderData('1m');
+    // Export Action
+    document.getElementById('exportData').addEventListener('click', () => {
+        const btn = document.getElementById('exportData');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Esportazione...';
+        
+        setTimeout(() => {
+            alert('Esportazione Crypto Data completata con successo!');
+            btn.innerHTML = originalText;
+        }, 1500);
+    });
+});
+
+
+
+ + latest.close.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+            if (changeEl && latest.varPct) {
+                changeEl.textContent = (latest.varPct >= 0 ? '+' : '') + latest.varPct + '%';
+                changeEl.className = 'detail-change ' + (latest.varPct >= 0 ? 'positive' : 'negative');
+            }
+        }
+
         renderData(range, apiData);
     }
 
@@ -253,6 +426,7 @@
         }, 1500);
     });
 });
+
 
 
 
