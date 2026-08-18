@@ -101,7 +101,7 @@
         renderData(range, apiData);
     }
 
-    function generateFallbackData(range) {
+        function generateFallbackData(range) {
         const data = [];
         const now = new Date();
         let count = 30;
@@ -115,21 +115,26 @@
             case '5y': count = 60; stepDays = 30; break;
         }
 
-        let currentPrice = typeof cryptoItem !== 'undefined' ? cryptoItem.price : 10000;
+        let basePrice = typeof cryptoItem !== 'undefined' ? cryptoItem.price : 10000;
+        let currentPrice = basePrice;
 
         for (let i = 0; i < count; i++) {
             const d = new Date(now);
             d.setDate(d.getDate() - (i * stepDays));
             const dateStr = d.toISOString().split('T')[0];
             
-            const o = currentPrice * (0.98 + Math.random() * 0.04);
+            // Deterministic "randomness" using sine wave and index
+            let pseudoRandom = Math.abs(Math.sin(i * 12.9898 + basePrice)) * 0.04;
+            let direction = Math.sin(i * 78.233 + basePrice) > 0 ? 1 : -1;
+            
+            const o = currentPrice * (0.98 + pseudoRandom);
             const c = currentPrice;
             const l = Math.min(o, c) * 0.98;
             const h = Math.max(o, c) * 1.02;
             const v = (((c - o) / o) * 100).toFixed(2);
             
             data.push({ period: dateStr, open: o, close: c, low: l, high: h, varPct: v });
-            currentPrice = currentPrice * (1 + (Math.random() - 0.5) * 0.02);
+            currentPrice = currentPrice * (1 + direction * (pseudoRandom * 0.5));
         }
         return data; 
     }
@@ -248,4 +253,6 @@
         }, 1500);
     });
 });
+
+
 
