@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+﻿document.addEventListener('DOMContentLoaded', () => {
     const toolsBtn = document.getElementById('toolsBtn');
     const toolsModal = document.getElementById('toolsModal');
     const closeModal = document.querySelector('.close-modal');
@@ -206,5 +206,25 @@ document.addEventListener('DOMContentLoaded', () => {
             expired: exp < new Date(),
             expiry: exp
         };
+    }
+
+    // API Key Logic
+    const apiKeyInput = document.getElementById('twelveDataKeyInput');
+    if (apiKeyInput) {
+        // Load existing
+        const existingKey = localStorage.getItem('twelvedata_apikey');
+        if (existingKey) {
+            apiKeyInput.value = existingKey;
+        }
+        
+        // Save on change
+        apiKeyInput.addEventListener('change', (e) => {
+            const val = e.target.value.trim();
+            if (val) {
+                localStorage.setItem('twelvedata_apikey', val);
+            } else {
+                localStorage.removeItem('twelvedata_apikey');
+            }
+        });
     }
 });

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -110,7 +110,7 @@
 
         <!-- Hub Footer -->
         <footer class="hub-footer">
-            <p data-i18n="hub_footer">© 2026 MARKET MONITOR - Specialized Trading Hub</p>
+            <p data-i18n="hub_footer">Â© 2026 MARKET MONITOR - Specialized Trading Hub</p>
         </footer>
     </div>
 
@@ -118,7 +118,7 @@
     <div class="side-actions">
         <div class="lang-selector">
             <button class="lang-btn" onclick="setLanguage('en')" title="English"><span class="fi fi-gb"></span></button>
-            <button class="lang-btn" onclick="setLanguage('fr')" title="Français"><span class="fi fi-fr"></span></button>
+            <button class="lang-btn" onclick="setLanguage('fr')" title="FranÃ§ais"><span class="fi fi-fr"></span></button>
             <button class="lang-btn" onclick="setLanguage('it')" title="Italiano"><span class="fi fi-it"></span></button>
         </div>
         <div class="secondary-actions">
@@ -146,6 +146,11 @@
                         <span id="themeLabel" data-i18n="mod_theme_dark">Scuro</span>
                     </button>
                 </div>
+                <div class="tool-item" style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 15px;">
+                    <span style="margin-bottom: 8px;">TwelveData API Key (Per Dati Storici Reali)</span>
+                    <input type="password" id="twelveDataKeyInput" placeholder="Inserisci qui la tua chiave API" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;">
+                    <a href="https://twelvedata.com/pricing" target="_blank" style="font-size: 11px; color: #3b82f6; text-decoration: none;">Ottieni una chiave gratuita qui</a>
+                </div>
             </div>
         </div>
     </div>
@@ -162,7 +167,7 @@
                     <p class="settings-group-desc" style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Crea un link con password per fornire accesso temporaneo a terzi per l'intera App Market Monitor.</p>
                     <div class="settings-col" style="display: flex; flex-direction: column;">
                         <label style="font-size: 12px; margin-bottom: 4px; display: block;" data-i18n="mod_pwd">Password Accesso</label>
-                        <input type="password" id="sharePassword" placeholder="••••••••" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
+                        <input type="password" id="sharePassword" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 12px;">
                         
                         <label style="font-size: 12px; margin-bottom: 4px; display: block;" data-i18n="mod_duration">Durata Accesso</label>
                         <select id="shareExpiry" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 8px; margin-bottom: 16px;">
@@ -196,7 +201,7 @@
             <p>Inserisci la password fornita per accedere a Market Monitor.</p>
             
             <div class="access-form" style="display: flex; flex-direction: column; gap: 16px;">
-                <input type="password" id="accessPasswordInput" placeholder="••••••••" style="padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-deep); color: var(--text-primary);">
+                <input type="password" id="accessPasswordInput" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" style="padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--bg-deep); color: var(--text-primary);">
                 <p id="accessError" class="access-error hidden" style="color: #ef4444; font-size: 14px; margin-top: -8px;">Password non valida.</p>
                 <button id="btnLogin" class="btn-login" style="background: var(--accent-blue); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer;">Entra</button>
             </div>
@@ -205,3 +210,4 @@
 
 </body>
 </html>
+
