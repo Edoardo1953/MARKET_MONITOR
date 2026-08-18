@@ -101,7 +101,7 @@
         
         // UPDATE MAIN HEADER PRICE WITH REAL LATEST DATA
         if (apiData && apiData.length > 0) {
-            const latest = apiData[0]; // because we reversed it, 0 is the newest
+            const latest = apiData[apiData.length - 1]; // last is newest after reverse
             const priceEl = document.getElementById('latestPrice');
             const changeEl = document.getElementById('priceChange');
             if (priceEl) {
@@ -426,6 +426,7 @@
         }, 1500);
     });
 });
+
 
 
 
