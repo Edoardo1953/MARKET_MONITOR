@@ -128,7 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const latest = apiData[apiData.length - 1]; // last is newest after reverse
             const priceEl = document.getElementById('latestPrice');
             const changeEl = document.getElementById('priceChange');
-            if (priceEl)                 priceEl.textContent = '$' + latest.close.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            if (priceEl) {
+                priceEl.textContent = '$' + latest.close.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             }
             if (changeEl && latest.varPct) {
                 changeEl.textContent = (latest.varPct >= 0 ? '+' : '') + latest.varPct + '%';

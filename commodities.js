@@ -223,14 +223,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const el = document.createElement('div');
                 el.className = 'search-item';
                 el.innerHTML = `
-                    <div class="info" style="cursor: pointer; flex: 1;">
-                        <span class="name">${item.name}</span>
-                        <div class="meta">
-                            <span class="symbol">${item.symbol}</span>
-                            <span class="category-tag">${item.category}</span>
+                    <div class="info" style="cursor: pointer; flex: 1; display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding-right: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span class="name">${item.name}</span>
+                            <div class="meta">
+                                <span class="symbol">${item.symbol}</span>
+                                <span class="category-tag">${item.category}</span>
+                            </div>
+                        </div>
+                        <div class="price-value" style="font-size: 1.1rem; color: white;">
+                            $${item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                         </div>
                     </div>
-                    <div class="add-btn" style="cursor: pointer;" title="Aggiungi">
+                    <div class="add-btn" style="cursor: pointer; flex-shrink: 0;" title="Aggiungi">
                         <i class="fa-solid fa-plus"></i>
                     </div>
                 `;

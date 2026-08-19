@@ -476,13 +476,7 @@ body {
 
 /* Global Footer Styles */
 .hub-footer {
-    position: fixed;
-    bottom: 25px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 500;
-    pointer-events: none;
+    display: none;
 }
 
 .hub-footer p {
