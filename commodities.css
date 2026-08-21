@@ -526,6 +526,20 @@ body {
     border-color: var(--accent-blue) transparent transparent transparent;
 }
 
+/* Fix for search results where it gets clipped at the top */
+.search-item .unit-banner {
+    bottom: auto;
+    top: 130%;
+    transform-origin: top left;
+    z-index: 1000;
+}
+
+.search-item .unit-banner::after {
+    top: auto;
+    bottom: 100%;
+    border-color: transparent transparent var(--accent-blue) transparent;
+}
+
 .banner-close {
     color: #ef4444; /* Rosso */
     cursor: pointer;
