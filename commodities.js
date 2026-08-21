@@ -98,7 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="commodity-price-area">
                         <div class="price-box">
-                            <div class="price-value">$${item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                            <div class="price-value">
+                                ${unitInfo.includes('Centesimi') 
+                                    ? item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ¢'
+                                    : '$' + item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </div>
                             <div class="price-change ${changeClass}">
                                 <i class="fa-solid ${changeIcon}"></i>
                                 ${Math.abs(item.change).toFixed(2)}%
@@ -271,7 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         <div class="price-value" style="font-size: 1.1rem; color: white;">
-                            $${item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            ${(item.unitInfo && item.unitInfo.includes('Centesimi'))
+                                ? item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ¢'
+                                : '$' + item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                         </div>
                     </div>
                     <div class="add-btn" style="cursor: pointer; flex-shrink: 0;" title="Aggiungi">
