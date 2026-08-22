@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions
     const exchangeCatalog = {
         'nyse': { name: 'NYSE', fullName: 'New York Stock Exchange', country: 'Stati Uniti', flag: 'fi fi-us', index: 'S&P 500', price: 6626.65, change: 1.07, basePrice: 6500, currency: '$' },
@@ -44,7 +44,8 @@
             { symbol: 'RACE', name: 'Ferrari N.V.', price: 412.30, change: 1.25 },
             { symbol: 'ISP', name: 'Intesa Sanpaolo', price: 4.12, change: 0.85 },
             { symbol: 'STLAM', name: 'Stellantis N.V.', price: 26.45, change: -1.24 },
-            { symbol: 'LDO', name: 'Leonardo S.p.A.', price: 24.80, change: 2.15 }
+            { symbol: 'LDO', name: 'Leonardo S.p.A.', price: 24.80, change: 2.15 },
+            { symbol: 'BAMI', name: 'Banco BPM (Popolare)', price: 5.30, change: 0.95 }
         ],
         'cac': [
             { symbol: 'MC.PA', name: 'LVMH', price: 466.65, change: -1.25 },
@@ -98,7 +99,24 @@
     const params = new URLSearchParams(window.location.search);
     const exKey = params.get('exchange') || 'borit';
     const ex = exchangeCatalog[exKey] || exchangeCatalog['borit'];
-    const constituents = stockConstituents[exKey] || [];
+    
+    // Check if exchange is favorite
+    const isFavParam = params.get('fav');
+    let isFavorite = false;
+    
+    if (isFavParam !== null) {
+        isFavorite = (isFavParam === '1');
+    } else {
+        const favorites = JSON.parse(localStorage.getItem('favoriteExchanges') || '[]');
+        isFavorite = favorites.includes(exKey);
+    }
+
+    let constituents = stockConstituents[exKey] || [];
+    
+    // If NOT favorite, limit the number of accessible stocks (e.g., top 3)
+    if (!isFavorite) {
+        constituents = constituents.slice(0, 3);
+    }
 
     // 3. Header UI
     document.getElementById('exchangeName').textContent = ex.name;
@@ -286,10 +304,19 @@
 
     function renderStocks(query = '') {
         stocksList.innerHTML = '';
-        const filtered = constituents.filter(s => 
-            s.symbol.toLowerCase().includes(query.toLowerCase()) || 
-            s.name.toLowerCase().includes(query.toLowerCase())
-        );
+        
+        if (!isFavorite) {
+            const notice = document.createElement('div');
+            notice.style = "grid-column: 1/-1; background-color: rgba(251, 191, 36, 0.1); border-left: 4px solid #fbbf24; padding: 12px; margin-bottom: 15px; border-radius: 4px; font-size: 13px; color: #cbd5e1; line-height: 1.5;";
+            notice.innerHTML = `<i class="fa-solid fa-circle-info" style="color: #fbbf24; margin-right: 8px;"></i> <strong>Stai vedendo un numero limitato di titoli.</strong><br>Torna alla home e attiva la <i class="fa-solid fa-star" style="color: #fbbf24;"></i> stella su questo mercato per sbloccarli tutti e migliorare la ricerca.`;
+            stocksList.appendChild(notice);
+        }
+
+        const queryWords = query.toLowerCase().trim().split(/\s+/);
+        const filtered = constituents.filter(s => {
+            const searchString = (s.symbol + ' ' + s.name).toLowerCase();
+            return queryWords.every(word => searchString.includes(word));
+        });
 
         if (filtered.length === 0 && constituents.length > 0) {
             stocksList.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 20px;">Nessun titolo trovato.</div>`;

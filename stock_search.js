@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { symbol: 'UCG', name: 'Unicredit S.p.A.', price: 34.12, change: 2.10, info: 'Banche' },
             { symbol: 'PRY', name: 'Prysmian S.p.A.', price: 48.50, change: 1.10, info: 'Cavi/Energia' },
             { symbol: 'SRN', name: 'Snam S.p.A.', price: 4.45, change: 0.25, info: 'Infrastructure' },
-            { symbol: 'BMPS', name: 'Banca MPS', price: 4.12, change: 1.45, info: 'Banche' }
+            { symbol: 'BMPS', name: 'Banca MPS', price: 4.12, change: 1.45, info: 'Banche' },
+            { symbol: 'BAMI', name: 'Banco BPM (Popolare)', price: 5.30, change: 0.95, info: 'Banche' }
         ],
         'cac': [
             { symbol: 'MC.PA', name: 'LVMH', price: 466.65, change: -1.25, info: 'Luxury Goods' },
@@ -125,10 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Render Functions
     function renderAllStocks(query = '') {
         allStocksList.innerHTML = '';
-        const filtered = stocks.filter(s => 
-            s.symbol.toLowerCase().includes(query.toLowerCase()) || 
-            s.name.toLowerCase().includes(query.toLowerCase())
-        );
+        const queryWords = query.toLowerCase().trim().split(/\s+/);
+        const filtered = stocks.filter(s => {
+            const searchString = (s.symbol + ' ' + s.name).toLowerCase();
+            return queryWords.every(word => searchString.includes(word));
+        });
 
         if (filtered.length === 0 && query.length > 0) {
             const addCard = document.createElement('div');
