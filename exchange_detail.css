@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --bg-dark: #070a13;
     --bg-card: #0f172a;
     --bg-hover: rgba(59, 130, 246, 0.08);
@@ -230,10 +230,10 @@ body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Int
 
 .btn-goto-stocks {
     padding: 10px 20px;
-    background: rgba(59, 130, 246, 0.12);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 50px;
-    color: var(--accent-primary);
+    background: var(--accent-gradient);
+    border: none;
+    border-radius: 8px; /* Not round like a pill/input */
+    color: #fff;
     text-decoration: none;
     font-size: 13px;
     font-weight: 700;
@@ -241,14 +241,12 @@ body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Int
     align-items: center;
     gap: 10px;
     transition: 0.2s;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
 }
 
 .btn-goto-stocks:hover {
-    background: var(--accent-gradient);
-    color: #fff;
-    border-color: transparent;
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
 .chart-tabs { display: flex; gap: 8px; }

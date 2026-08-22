@@ -93,7 +93,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const customStocks = JSON.parse(localStorage.getItem('custom_stocks')) || [];
     const fullCatalog = [...stockCatalog, ...customStocks];
 
-    const stock = fullCatalog.find(s => s.symbol === symbol) || stockCatalog[0];
+    let stock = fullCatalog.find(s => s.symbol === symbol);
+    
+    // If not found in catalogs, check all monitors (in case it was saved under a different exchange key)
+    if (!stock) {
+        const allExchanges = ['nyse', 'nasdaq', 'borit', 'lse', 'dax', 'cac', 'tse', 'hkex', 'tsx', 'eurnex', 'ibex'];
+        for (let ex of allExchanges) {
+            const monitor = JSON.parse(localStorage.getItem(`marketMonitor_stocks_${ex}`)) || [];
+            const found = monitor.find(s => s.symbol === symbol);
+            if (found) {
+                stock = found;
+                break;
+            }
+        }
+    }
+    
+    // If still not found, create a generic placeholder with a base price to avoid NaN crashes in chart math
+    if (!stock) {
+        stock = { 
+            symbol: symbol, 
+            name: symbol + ' (API)', 
+            exchange: exchangeKey.toUpperCase(), 
+            price: 100.00, 
+            change: 0 
+        };
+    }
 
     // 3. Populate Header UI
     document.getElementById('stockName').textContent = stock.name;

@@ -109,6 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const ex = exchangeData[exKey] || exchangeData['borit'];
     const stocks = stockCatalog[exKey] || [];
     
+    // Load custom added stocks
+    const customStocks = JSON.parse(localStorage.getItem('custom_stocks')) || [];
+    customStocks.forEach(cs => {
+        if (cs.exchange === ex.name && !stocks.find(s => s.symbol === cs.symbol)) {
+            stocks.push(cs);
+        }
+    });
+    
     // Manage Favorites/Monitor via LocalStorage
     let myMonitor = JSON.parse(localStorage.getItem(`marketMonitor_stocks_${exKey}`)) || [];
 
@@ -299,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
-        }, 500);
+        }, 1200);
     });
 
     async function updatePricesFromAPI() {
