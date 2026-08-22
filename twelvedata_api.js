@@ -83,6 +83,32 @@ const TwelveDataAPI = {
             return `${symbol}/USD`;
         }
         return symbol;
+    },
+
+    /**
+     * Search for symbols based on a query
+     * @param {string} query - e.g. "INTC" or "Apple"
+     * @returns {Promise<array>}
+     */
+    async searchSymbols(query) {
+        const apiKey = this.getApiKey();
+        if (!apiKey || !query) return [];
+
+        try {
+            const response = await fetch(`https://api.twelvedata.com/symbol_search?symbol=${encodeURIComponent(query)}&apikey=${apiKey}`);
+            const data = await response.json();
+            
+            if (data.status === "error") {
+                console.warn("Twelve Data API Error:", data.message);
+                return [];
+            }
+            
+            // Returns array of { symbol, instrument_name, exchange, currency, type, country }
+            return data.data || [];
+        } catch (error) {
+            console.error("Failed to fetch symbols from Twelve Data:", error);
+            return [];
+        }
     }
 };
 

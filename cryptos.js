@@ -235,9 +235,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let searchTimeout;
+    
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.trim();
         renderSearchResults(query, activeCategory);
+        
+        clearTimeout(searchTimeout);
+        if (query.length < 2) return;
+        
+        searchTimeout = setTimeout(async () => {
+            if (TwelveDataAPI && TwelveDataAPI.getApiKey()) {
+                const results = await TwelveDataAPI.searchSymbols(query);
+                if (results && results.length > 0) {
+                    let addedNew = false;
+                    results.forEach(r => {
+                        // For cryptos, maybe check if it's a crypto type or just allow it 
+                        if (r.instrument_type === 'Digital Currency' || r.instrument_name.toLowerCase().includes('bitcoin') || true) {
+                            if (!cryptoData.find(c => c.symbol === r.symbol)) {
+                                cryptoData.push({
+                                    name: r.instrument_name,
+                                    symbol: r.symbol,
+                                    price: 0,
+                                    change: 0,
+                                    category: 'Search Results'
+                                });
+                                addedNew = true;
+                            }
+                        }
+                    });
+                    if (addedNew) {
+                        renderSearchResults(query, activeCategory);
+                    }
+                }
+            }
+        }, 500);
     });
 
     searchInput.addEventListener('focus', () => {

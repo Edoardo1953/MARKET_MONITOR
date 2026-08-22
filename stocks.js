@@ -179,9 +179,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. Event Listeners
+    let searchTimeout;
     searchInput.addEventListener('input', (e) => {
-        currentSearch = e.target.value;
+        currentSearch = e.target.value.trim();
         renderExchanges();
+        
+        clearTimeout(searchTimeout);
+        if (currentSearch.length < 2) return;
+        
+        searchTimeout = setTimeout(async () => {
+            if (window.TwelveDataAPI && TwelveDataAPI.getApiKey()) {
+                try {
+                    const results = await TwelveDataAPI.searchSymbols(currentSearch);
+                    if (results && results.length > 0) {
+                        let updated = false;
+                        results.forEach(r => {
+                            // Find the matching exchange
+                            const matchedEx = stockExchanges.find(ex => 
+                                (r.exchange && ex.name.toLowerCase().includes(r.exchange.toLowerCase())) ||
+                                (r.country && ex.country.toLowerCase() === r.country.toLowerCase())
+                            );
+                            
+                            if (matchedEx) {
+                                if (!matchedEx.mainStocks) matchedEx.mainStocks = [];
+                                // Aggiungiamo sia il simbolo che il nome in modo che la ricerca per nome funzioni
+                                const stockString = `${r.symbol} ${r.instrument_name}`;
+                                if (!matchedEx.mainStocks.includes(stockString)) {
+                                    // Rimuoviamo eventuali versioni vecchie solo simbolo
+                                    matchedEx.mainStocks = matchedEx.mainStocks.filter(s => s !== r.symbol);
+                                    matchedEx.mainStocks.push(stockString);
+                                    updated = true;
+                                }
+                            }
+                        });
+                        
+                        if (updated) {
+                            renderExchanges();
+                        }
+                    }
+                } catch(err) {
+                    console.error("API error", err);
+                }
+            }
+        }, 500);
     });
 
     filterChips.forEach(chip => {

@@ -320,9 +320,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let searchTimeout;
+
     searchInput.addEventListener('input', (e) => {
         const query = e.target.value.trim();
         renderSearchResults(query, activeCategory);
+        
+        clearTimeout(searchTimeout);
+        if (query.length < 2) return;
+        
+        searchTimeout = setTimeout(async () => {
+            if (TwelveDataAPI && TwelveDataAPI.getApiKey()) {
+                const results = await TwelveDataAPI.searchSymbols(query);
+                if (results && results.length > 0) {
+                    let addedNew = false;
+                    results.forEach(r => {
+                        // Accept any relevant symbol for commodities or global search
+                        if (!commodityData.find(c => c.symbol === r.symbol)) {
+                            commodityData.push({
+                                name: r.instrument_name,
+                                symbol: r.symbol,
+                                price: 0,
+                                change: 0,
+                                category: 'Search Results',
+                                unitInfo: r.exchange
+                            });
+                            addedNew = true;
+                        }
+                    });
+                    if (addedNew) {
+                        renderSearchResults(query, activeCategory);
+                    }
+                }
+            }
+        }, 500);
     });
 
     searchInput.addEventListener('focus', () => {

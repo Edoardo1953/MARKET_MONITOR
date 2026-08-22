@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { symbol: 'AVGO', name: 'Broadcom Inc.', price: 318.29, change: 1.10, info: 'Hardware' },
             { symbol: 'COST', name: 'Costco Wholesale', price: 973.82, change: 0.45, info: 'Retail' },
             { symbol: 'AMD', name: 'AMD', price: 184.20, change: 4.12, info: 'Processors' },
-            { symbol: 'ADBE', name: 'Adobe Inc.', price: 504.12, change: -2.30, info: 'Software' }
+            { symbol: 'ADBE', name: 'Adobe Inc.', price: 504.12, change: -2.30, info: 'Software' },
+            { symbol: 'INTC', name: 'Intel Corp.', price: 34.20, change: 0.50, info: 'Semiconductors' }
         ],
         'borit': [
             { symbol: 'ENI', name: 'Eni S.p.A.', price: 23.26, change: 0.45, info: 'Energia' },
@@ -259,8 +260,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 5. Search
+    let searchTimeout;
     searchInput.addEventListener('input', (e) => {
-        renderAllStocks(e.target.value);
+        const query = e.target.value;
+        
+        // Render locally immediately
+        renderAllStocks(query);
+        
+        clearTimeout(searchTimeout);
+        if (query.trim().length < 2) return;
+        
+        // Fetch from API after 500ms debounce
+        searchTimeout = setTimeout(async () => {
+            if (TwelveDataAPI && TwelveDataAPI.getApiKey()) {
+                const results = await TwelveDataAPI.searchSymbols(query);
+                if (results && results.length > 0) {
+                    let addedNew = false;
+                    results.forEach(r => {
+                        // Only add if it somewhat matches our current exchange or we just want to allow cross-exchange searches
+                        // We will allow it and mark the exchange name in info
+                        if (!stocks.find(s => s.symbol === r.symbol)) {
+                            stocks.push({
+                                symbol: r.symbol,
+                                name: r.instrument_name,
+                                price: 0,
+                                change: 0,
+                                info: r.exchange,
+                                currency: r.currency || ex.currency
+                            });
+                            addedNew = true;
+                        }
+                    });
+                    
+                    if (addedNew) {
+                        renderAllStocks(query);
+                        // Fetch real prices for the new visible results
+                        updatePricesFromAPI();
+                    }
+                }
+            }
+        }, 500);
     });
 
     async function updatePricesFromAPI() {
