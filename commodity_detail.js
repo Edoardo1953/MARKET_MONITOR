@@ -50,8 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const symbol = params.get('symbol');
     
     // Find current object in catalog or use a default
-    const commodity = commodityCatalog.find(c => c.symbol === symbol) || 
+    const catalogItem = commodityCatalog.find(c => c.symbol === symbol) || 
                       { name: symbol || 'Commodity Ignota', symbol: symbol, price: 0, change: 0, category: 'Generale' };
+                      
+    const monitorItems = JSON.parse(localStorage.getItem('commodities_monitor')) || [];
+    const monitorItem = monitorItems.find(m => m.symbol === symbol);
+    
+    const commodity = monitorItem ? { ...catalogItem, price: monitorItem.price, change: monitorItem.change } : catalogItem;
 
     // 3. UI Update (Title area)
     document.getElementById('commodityName').textContent = commodity.name;
@@ -175,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data.push({ period: dateStr, open: o, close: c, low: l, high: h, varPct: v });
             currentPrice = currentPrice * (1 + direction * (pseudoRandom * 0.5));
         }
-        return data; 
+        return data.reverse(); 
     }
 
     function renderData(range, records) {

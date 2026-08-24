@@ -181,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.price *= (1 + movement);
             item.change += movement * 100;
         });
+        saveMonitor();
         renderMonitor();
         const rows = document.querySelectorAll('.commodity-row');
         rows.forEach(r => {

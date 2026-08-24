@@ -234,7 +234,11 @@ document.addEventListener('DOMContentLoaded', () => {
             item.price *= (1 + movement);
             item.change += movement * 100;
         });
+        saveMonitor();
         renderMonitor();
+        if (!searchResults.classList.contains('hidden')) {
+            renderSearchResults(searchInput.value.trim(), activeCategory);
+        }
         const rows = document.querySelectorAll('.commodity-row');
         rows.forEach(r => {
             r.style.boxShadow = '0 0 15px rgba(59, 130, 246, 0.3)';
@@ -275,9 +279,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             </div>
                         </div>
                         <div class="price-value" style="font-size: 1.1rem; color: white;">
-                            ${(item.unitInfo && item.unitInfo.includes('Centesimi'))
-                                ? item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ¢'
-                                : '$' + item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            ${(() => {
+                                const mItem = monitorItems.find(m => m.symbol === item.symbol);
+                                const p = mItem ? mItem.price : item.price;
+                                return (item.unitInfo && item.unitInfo.includes('Centesimi'))
+                                    ? p.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ¢'
+                                    : '$' + p.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            })()}
                         </div>
                     </div>
                     <div class="add-btn" style="cursor: pointer; flex-shrink: 0;" title="Aggiungi">
@@ -407,6 +415,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             saveMonitor();
             renderMonitor();
+            if (!searchResults.classList.contains('hidden')) {
+                renderSearchResults(searchInput.value.trim(), activeCategory);
+            }
             return true;
         } catch (error) {
             console.error("Twelve Data Commodity Fetch Error:", error);

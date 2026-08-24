@@ -1,4 +1,4 @@
-﻿document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // 1. Data Definitions
     const cryptoGroups = {
         'Major': 'Mercato Principale (BTC, ETH, SOL)',
@@ -30,8 +30,13 @@
     const symbol = params.get('symbol');
     
     // Find current object in catalog
-    const crypto = cryptoCatalog.find(c => c.symbol === symbol) || 
+    const catalogItem = cryptoCatalog.find(c => c.symbol === symbol) || 
                    { name: symbol || 'Crypto Ignota', symbol: symbol, price: 0, change: 0, category: 'Major' };
+                   
+    const monitorItems = JSON.parse(localStorage.getItem('cryptos_monitor')) || [];
+    const monitorItem = monitorItems.find(m => m.symbol === symbol);
+    
+    const crypto = monitorItem ? { ...catalogItem, price: monitorItem.price, change: monitorItem.change } : catalogItem;
 
     // 3. UI Update (Title area)
     document.getElementById('cryptoName').textContent = crypto.name;
@@ -77,7 +82,7 @@
         if (typeof TwelveDataAPI !== 'undefined') {
             const apiKey = TwelveDataAPI.getApiKey();
             if (apiKey) {
-                let sym = typeof cryptoItem !== 'undefined' ? cryptoItem.symbol : "";
+                let sym = typeof crypto !== 'undefined' ? crypto.symbol : "";
                 sym = TwelveDataAPI.mapSymbol(sym, 'crypto');
                 apiData = await TwelveDataAPI.getTimeSeries(sym, interval, outputsize);
             }
@@ -122,7 +127,7 @@
             case '5y': count = 60; stepDays = 30; break;
         }
 
-        let basePrice = typeof cryptoItem !== 'undefined' ? cryptoItem.price : 10000;
+        let basePrice = typeof crypto !== 'undefined' ? crypto.price : 10000;
         let currentPrice = basePrice;
 
         for (let i = 0; i < count; i++) {
@@ -143,7 +148,7 @@
             data.push({ period: dateStr, open: o, close: c, low: l, high: h, varPct: v });
             currentPrice = currentPrice * (1 + direction * (pseudoRandom * 0.5));
         }
-        return data; 
+        return data.reverse(); 
     }
 
     function renderData(range, records) {
@@ -166,7 +171,7 @@
         const data = periods.map(r => r.close);
         const pointRadii = periods.map(() => 4);
         
-        let labelName = typeof cryptoItem !== 'undefined' ? cryptoItem.name : "Asset";
+        let labelName = typeof crypto !== 'undefined' ? crypto.name : "Asset";
 
         if (chartInstance) {
             chartInstance.data.labels = labels;
@@ -288,7 +293,7 @@
             case '5y': count = 60; stepDays = 30; break;
         }
 
-        let basePrice = typeof cryptoItem !== 'undefined' ? cryptoItem.price : 10000;
+        let basePrice = typeof crypto !== 'undefined' ? crypto.price : 10000;
         let currentPrice = basePrice;
 
         for (let i = 0; i < count; i++) {
@@ -332,7 +337,7 @@
         const data = periods.map(r => r.close);
         const pointRadii = periods.map(() => 4);
         
-        let labelName = typeof cryptoItem !== 'undefined' ? cryptoItem.name : "Asset";
+        let labelName = typeof crypto !== 'undefined' ? crypto.name : "Asset";
 
         if (chartInstance) {
             chartInstance.data.labels = labels;
