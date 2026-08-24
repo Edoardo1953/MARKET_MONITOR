@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -144,6 +144,13 @@
                     <button id="themeToggle" class="theme-btn">
                         <i class="fa-solid fa-moon"></i>
                         <span id="themeLabel" data-i18n="mod_theme_dark">Scuro</span>
+                    </button>
+                </div>
+                <div class="tool-item">
+                    <span>Svuota Cache App</span>
+                    <button class="theme-btn" onclick="window.location.reload(true); window.location.href = window.location.pathname + '?reload=' + new Date().getTime();" style="width: auto; padding: 5px 15px; border: 1px solid var(--accent-blue); background: transparent;">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Aggiorna</span>
                     </button>
                 </div>
                 <div class="tool-item" style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 15px;">
